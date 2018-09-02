@@ -8,7 +8,7 @@ Install NuGet package or download the source from Github.
 
 ## Usage
 
-1. Initialise a new `Celin.AIS.Celin.Server` instance with the AIS Url (note the trailing '/').
+1. Initialise a new `Celin.AIS.Server` instance with the AIS Url (note the trailing '/').
 2. Populate the `AuthRequest` member of the instance.
 3. Call the `Authenticate` method.
 
