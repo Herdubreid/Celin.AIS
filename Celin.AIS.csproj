@@ -2,6 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Celin.AIS</PackageId>
+    <PackageVersion>0.2</PackageVersion>
+    <Authors>Finnur Bragason</Authors>
+    <Owners>Bragason and Associates Pty Ltd</Owners>
+    <Summary>Oracle E1/JDE AIS Interface</Summary>
+    <PackageTags>Oracle, E1, JDE</PackageTags>
+    <Title>Celin.AIS</Title>
+    <PackageProjectUrl>https://github.com/Herdubreid/Celin.AIS</PackageProjectUrl>
+    <Description>Oracle E1/JDE AIS Interface</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,5 +19,6 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="NLog" Version="4.5.9" />
+    <PackageReference Include="NuGet.Build.Packaging" Version="0.2.0" />
   </ItemGroup>
 </Project>

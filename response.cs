@@ -2,8 +2,8 @@
 namespace Celin.AIS
 {
     /*
- * AIS Response definitions
- */
+     * AIS Response definitions
+     */
     public class Cell
     {
         public string title { get; set; }

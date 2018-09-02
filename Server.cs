@@ -5,13 +5,29 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json;
 namespace Celin.AIS
 {
+    /// <summary>
+    /// E1/JDE AIS Server Class.
+    /// </summary>
     public class Server
     {
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-        private string BaseUrl { get; }
+        public string BaseUrl { get; set; }
         private HttpClient Client { get; } = new HttpClient();
+        /// <summary>
+        /// Holds the Authentication Response Parameters.
+        /// </summary>
+        /// <value>The Authentication Response.</value>
         public AuthResponse AuthResponse { get; private set; } = null;
+        /// <summary>
+        /// Holds the Authentication Request Parameters.
+        /// </summary>
+        /// <value>The Authentication Request.</value>
         public AuthRequest AuthRequest { get; private set; } = new AuthRequest { deviceName = "celin", requiredCapabilities = "grid,processingOption" };
+        /// <summary>
+        /// Authenticate this instance.
+        /// </summary>
+        /// <returns>Authentication success flag.</returns>
+        /// <remarks>Sets the AuthResponse member if successful.</remarks>
         public bool Authenticate()
         {
             HttpContent content = new StringContent(JsonConvert.SerializeObject(this.AuthRequest));
@@ -26,12 +42,18 @@ namespace Celin.AIS
             }
             catch (System.AggregateException e)
             {
-                Server.logger.Error("Authenticate:\n{0}\n{1}", e.Message, content.ReadAsStringAsync().Result);
+                logger.Error("Authenticate:\n{0}", e.Message);
             }
             this.AuthResponse = null;
             return false;
         }
-        public Tuple<bool, T> Request<T>(Request request) where T : FormResponse, new()
+        /// <summary>
+        /// Submit an AIS Request.
+        /// </summary>
+        /// <returns>A Tuple with success flag and the response object.</returns>
+        /// <param name="request">The Request object.</param>
+        /// <typeparam name="T">Response object type.</typeparam>
+        public Tuple<bool, T> Request<T>(Request request) where T :  new()
         {
             request.deviceName = this.AuthRequest.deviceName;
             request.token = this.AuthResponse.userInfo.token;
@@ -46,24 +68,23 @@ namespace Celin.AIS
                 }
                 else
                 {
-                    return new Tuple<bool, T>(false, new T
-                    {
-                        message = responseMessage.Exception.Message
-                    });
+                    logger.Warn("Request:\n{0}\n{1}", responseMessage.Result.ReasonPhrase, content.ReadAsStringAsync().Result);
+                    return new Tuple<bool, T>(false, new T());
                 }
             }
             catch (System.AggregateException e)
             {
-                Server.logger.Error("Request:\n{0}\n{1}", e.Message, content.ReadAsStringAsync().Result);
-                return new Tuple<bool, T>(false, new T
-                {
-                    message = e.Message
-                });
+                logger.Error("Request:\n{0}\n{1}", e.Message, content.ReadAsStringAsync().Result);
+                return new Tuple<bool, T>(false, new T());
             }
         }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:Celin.AIS.Server"/> class.
+        /// </summary>
+        /// <param name="baseUrl">The Url for the AIS Server (for example https://e1.celin.io:9302/jderest/).</param>
         public Server(string baseUrl)
         {
-            Server.logger.Debug("BaseUrl: {0}", baseUrl);
+            logger.Debug("BaseUrl: {0}", baseUrl);
             this.BaseUrl = baseUrl;
             this.Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
