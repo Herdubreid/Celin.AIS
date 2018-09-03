@@ -1,6 +1,6 @@
 # Celin.AIS
 
-Celin.AIS is a .NET Core 2.1 Library for Oracle E1/JDE AIS.
+Celin.AIS is a .NET Standard 2.0 Library for Oracle E1/JDE AIS.
 
 ## Install
 
