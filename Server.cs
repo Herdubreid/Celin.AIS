@@ -22,7 +22,7 @@ namespace Celin.AIS
         /// Holds the Authentication Request Parameters.
         /// </summary>
         /// <value>The Authentication Request.</value>
-        public AuthRequest AuthRequest { get; private set; } = new AuthRequest { deviceName = "celin", requiredCapabilities = "grid,processingOption" };
+        public AuthRequest AuthRequest { get; set; } = new AuthRequest { deviceName = "celin", requiredCapabilities = "grid,processingOption" };
         /// <summary>
         /// Authenticate this instance.
         /// </summary>
@@ -40,7 +40,7 @@ namespace Celin.AIS
                     return true;
                 }
             }
-            catch (System.AggregateException e)
+            catch (Exception e)
             {
                 logger.Error("Authenticate:\n{0}", e.Message);
             }
@@ -72,7 +72,7 @@ namespace Celin.AIS
                     return new Tuple<bool, T>(false, new T());
                 }
             }
-            catch (System.AggregateException e)
+            catch (Exception e)
             {
                 logger.Error("Request:\n{0}\n{1}", e.Message, content.ReadAsStringAsync().Result);
                 return new Tuple<bool, T>(false, new T());

@@ -19,7 +19,7 @@ namespace Celin.AIS
     public class RowEvent
     {
         public int rowNumber { get; set; }
-        public List<ColumnEvent> gridColumnEvents { get; set; }
+        public List<ColumnEvent> gridColumnEvents { get; set; } = new List<ColumnEvent>();
     }
     public class Grid
     {
@@ -27,11 +27,11 @@ namespace Celin.AIS
     }
     public class GridInsert : Grid
     {
-        public List<RowEvent> gridRowInsertEvents { get; set; }
+        public List<RowEvent> gridRowInsertEvents { get; set; } = new List<RowEvent>();
     }
     public class GridUpdate : Grid
     {
-        public List<RowEvent> gridRowUpdateEvents { get; set; }
+        public List<RowEvent> gridRowUpdateEvents { get; set; } = new List<RowEvent>();
     }
     public abstract class Action { }
     public class GridAction : Action
@@ -57,10 +57,17 @@ namespace Celin.AIS
     }
     public class Query
     {
-        public List<Condition> condition { get; set; }
+        public List<Condition> condition { get; set; } = new List<Condition>();
         public bool autoFind { get; set; }
         public string matchType { get; set; }
         public bool autoClear { get; set; }
+    }
+    public class ActionRequest
+    {
+        public string returnControlIDs { get; set; }
+        public List<Action> formActions { get; set; } = new List<Action>();
+        public string formOID { get; set; }
+        public string stopOnWarning { get; set; }
     }
     public abstract class Service
     {
@@ -82,24 +89,34 @@ namespace Celin.AIS
     }
     public class FormRequest : Request
     {
-        public override string SERVICE { get { return "formservice"; } }
+        public override string SERVICE { get; } = "formservice";
         public string formServiceAction { get; set; }
         public string stopOnWarning { get; set; }
         public string queryObjectName { get; set; }
-        public List<Input> formInputs { get; set; }
-        public List<Action> formActions { get; set; }
+        public List<Input> formInputs { get; set; } = new List<Input>();
+        public List<Action> formActions { get; set; } = new List<Action>();
+    }
+    public class StackFormRequest : Request
+    {
+        public override string SERVICE { get; } = "appstack";
+        public string action { get; set; }
+        public FormRequest formRequest { get; set; }
+        public ActionRequest actionRequest { get; set; } = new ActionRequest();
+        public int stackId { get; set; }
+        public int stateId { get; set; }
+        public string rid { get; set; }
     }
     public class DatabrowserRequest : Request
     {
-        public override string SERVICE { get { return "dataservice"; } }
+        public override string SERVICE { get; } = "dataservice";
         public string targetName { get; set; }
         public string targetType { get; set; }
         public string dataServiceType;
     }
     public class BatchformRequest : Service
     {
-        public override string SERVICE { get { return "batchformservice"; } }
-        public List<FormRequest> formRequests { get; set; }
+        public override string SERVICE { get; } = "batchformservice";
+        public List<FormRequest> formRequests { get; set; } = new List<FormRequest>();
         public string token { get; set; }
         public string deviceName { get; set; }
     }
@@ -125,27 +142,27 @@ namespace Celin.AIS
     }
     public class MoGetText : MoRequest
     {
-        public override string SERVICE { get { return "file/gettext"; } }
+        public override string SERVICE { get; } = "file/gettext";
     }
     public class MoUpdateText : MoRequest
     {
-        public override string SERVICE { get { return "file/updatetext"; } }
+        public override string SERVICE { get; } = "file/updatetext";
     }
     public class MoList : MoRequest
     {
-        public override string SERVICE { get { return "file/list"; } }
+        public override string SERVICE { get; } = "file/list";
     }
     public class MoUpload : MoRequest
     {
-        public override string SERVICE { get { return "file/upload"; } }
+        public override string SERVICE { get; } = "file/upload";
     }
     public class MoDownload : MoRequest
     {
-        public override string SERVICE { get { return "file/download"; } }
+        public override string SERVICE { get; } = "file/download";
     }
     public class AuthRequest : Service
     {
-        public override string SERVICE { get { return "tokenrequest"; } }
+        public override string SERVICE { get; } = "tokenrequest";
         public string username { get; set; }
         public string password { get; set; }
         public string deviceName { get; set; }
@@ -153,10 +170,10 @@ namespace Celin.AIS
     }
     public class LogoutRequest : Service
     {
-        public override string SERVICE { get { return "tokenrequest/logout"; } }
+        public override string SERVICE { get; } = "tokenrequest/logout";
     }
     public class DefaultConfig : Service
     {
-        public override string SERVICE { get { return "defaultconfig"; } }
+        public override string SERVICE { get; } = "defaultconfig";
     }
 }
