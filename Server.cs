@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -12,6 +13,7 @@ namespace Celin.AIS
     {
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public string BaseUrl { get; set; }
+        private readonly string mediaType = "application/json";
         private HttpClient Client { get; } = new HttpClient();
         /// <summary>
         /// Holds the Authentication Response Parameters.
@@ -30,7 +32,7 @@ namespace Celin.AIS
         /// <remarks>Sets the AuthResponse member if successful.</remarks>
         public bool Authenticate()
         {
-            HttpContent content = new StringContent(JsonConvert.SerializeObject(this.AuthRequest));
+            HttpContent content = new StringContent(JsonConvert.SerializeObject(this.AuthRequest), Encoding.UTF8, mediaType);
             logger.Trace(content.ReadAsStringAsync().Result);
             try
             {
@@ -60,7 +62,7 @@ namespace Celin.AIS
         {
             request.deviceName = this.AuthRequest.deviceName;
             request.token = this.AuthResponse.userInfo.token;
-            HttpContent content = new StringContent(JsonConvert.SerializeObject(request));
+            HttpContent content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, mediaType);
             logger.Trace(content.ReadAsStringAsync().Result);
             try
             {
@@ -92,7 +94,7 @@ namespace Celin.AIS
         {
             logger.Debug("BaseUrl: {0}", baseUrl);
             this.BaseUrl = baseUrl;
-            this.Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            this.Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
