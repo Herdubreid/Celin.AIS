@@ -31,9 +31,11 @@ namespace Celin.AIS
         public bool Authenticate()
         {
             HttpContent content = new StringContent(JsonConvert.SerializeObject(this.AuthRequest));
+            logger.Trace(content.ReadAsStringAsync().Result);
             try
             {
                 Task<HttpResponseMessage> responseMessage = this.Client.PostAsync(this.BaseUrl + this.AuthRequest.SERVICE, content);
+                logger.Trace(responseMessage.Result);
                 if (responseMessage.Result.IsSuccessStatusCode)
                 {
                     this.AuthResponse = JsonConvert.DeserializeObject<AuthResponse>(responseMessage.Result.Content.ReadAsStringAsync().Result);
@@ -42,6 +44,7 @@ namespace Celin.AIS
             }
             catch (Exception e)
             {
+                logger.Trace(e);
                 logger.Error("Authenticate:\n{0}", e.Message);
             }
             this.AuthResponse = null;
@@ -58,9 +61,11 @@ namespace Celin.AIS
             request.deviceName = this.AuthRequest.deviceName;
             request.token = this.AuthResponse.userInfo.token;
             HttpContent content = new StringContent(JsonConvert.SerializeObject(request));
+            logger.Trace(content.ReadAsStringAsync().Result);
             try
             {
                 Task<HttpResponseMessage> responseMessage = this.Client.PostAsync(this.BaseUrl + request.SERVICE, content);
+                logger.Trace(responseMessage.Result);
                 if (responseMessage.Result.IsSuccessStatusCode)
                 {
                     T result = JsonConvert.DeserializeObject<T>(responseMessage.Result.Content.ReadAsStringAsync().Result);
@@ -74,6 +79,7 @@ namespace Celin.AIS
             }
             catch (Exception e)
             {
+                logger.Trace(e);
                 logger.Error("Request:\n{0}\n{1}", e.Message, content.ReadAsStringAsync().Result);
                 return new Tuple<bool, T>(false, new T());
             }
