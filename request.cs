@@ -170,6 +170,7 @@ namespace Celin.AIS
     }
     public class LogoutRequest : Service
     {
+        public string token { get; set; }
         public override string SERVICE { get; } = "tokenrequest/logout";
     }
     public class DefaultConfig : Service

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -11,10 +12,10 @@ namespace Celin.AIS
     /// </summary>
     public class Server
     {
-        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public string BaseUrl { get; set; }
-        private readonly string mediaType = "application/json";
-        private HttpClient Client { get; } = new HttpClient();
+        readonly string mediaType = "application/json";
+        HttpClient Client { get; } = new HttpClient();
         /// <summary>
         /// Holds the Authentication Response Parameters.
         /// </summary>
@@ -29,28 +30,63 @@ namespace Celin.AIS
         /// Authenticate this instance.
         /// </summary>
         /// <returns>Authentication success flag.</returns>
-        /// <remarks>Sets the AuthResponse member if successful.</remarks>
-        public bool Authenticate()
+        /// <remarks>Sets the AuthResponse property if successful.</remarks>
+        public bool Authenticate(CancellationTokenSource cancel = null)
         {
-            HttpContent content = new StringContent(JsonConvert.SerializeObject(this.AuthRequest), Encoding.UTF8, mediaType);
+            if (cancel is null) cancel = new CancellationTokenSource();
+            HttpContent content = new StringContent(JsonConvert.SerializeObject(AuthRequest), Encoding.UTF8, mediaType);
             logger.Trace(content.ReadAsStringAsync().Result);
             try
             {
-                Task<HttpResponseMessage> responseMessage = this.Client.PostAsync(this.BaseUrl + this.AuthRequest.SERVICE, content);
+                Task<HttpResponseMessage> responseMessage = Client.PostAsync(BaseUrl + AuthRequest.SERVICE, content, cancel.Token);
                 logger.Trace(responseMessage.Result);
                 if (responseMessage.Result.IsSuccessStatusCode)
                 {
-                    this.AuthResponse = JsonConvert.DeserializeObject<AuthResponse>(responseMessage.Result.Content.ReadAsStringAsync().Result);
+                    AuthResponse = JsonConvert.DeserializeObject<AuthResponse>(responseMessage.Result.Content.ReadAsStringAsync().Result);
                     return true;
                 }
             }
             catch (Exception e)
             {
-                logger.Trace(e);
+                logger.Debug(e);
                 logger.Error("Authenticate:\n{0}", e.Message);
             }
-            this.AuthResponse = null;
+            AuthResponse = null;
             return false;
+        }
+        /// <summary>
+        /// Logout this instance.
+        /// </summary>
+        /// <returns>Logut success flag.</returns>
+        /// <remarks>Clears the AuthResponse property if successful.</remarks>
+        public bool Logout()
+        {
+            try
+            {
+                var logout = new LogoutRequest
+                {
+                    token = AuthResponse.userInfo.token
+                };
+                HttpContent content = new StringContent(JsonConvert.SerializeObject(logout), Encoding.UTF8, mediaType);
+                logger.Trace(content.ReadAsStringAsync().Result);
+                Task<HttpResponseMessage> responseMessage = Client.PostAsync(BaseUrl + logout.SERVICE, content);
+                if (responseMessage.Result.IsSuccessStatusCode)
+                {
+                    AuthResponse = null;
+                    return true;
+                }
+                else
+                {
+                    logger.Warn("Logout:\n{0}", responseMessage.Result.ReasonPhrase);
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Debug(e);
+                logger.Error("Logout:\n{0}", e.Message);
+                return false;
+            }
         }
         /// <summary>
         /// Submit an AIS Request.
@@ -58,15 +94,16 @@ namespace Celin.AIS
         /// <returns>A Tuple with success flag and the response object.</returns>
         /// <param name="request">The Request object.</param>
         /// <typeparam name="T">Response object type.</typeparam>
-        public Tuple<bool, T> Request<T>(Request request) where T :  new()
+        public Tuple<bool, T> Request<T>(Request request, CancellationTokenSource cancel = null) where T :  new()
         {
-            request.deviceName = this.AuthRequest.deviceName;
-            request.token = this.AuthResponse.userInfo.token;
+            if (cancel is null) cancel = new CancellationTokenSource();
+            request.deviceName = AuthRequest.deviceName;
+            request.token = AuthResponse.userInfo.token;
             HttpContent content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, mediaType);
             logger.Trace(content.ReadAsStringAsync().Result);
             try
             {
-                Task<HttpResponseMessage> responseMessage = this.Client.PostAsync(this.BaseUrl + request.SERVICE, content);
+                Task<HttpResponseMessage> responseMessage = Client.PostAsync(BaseUrl + request.SERVICE, content, cancel.Token);
                 logger.Trace(responseMessage.Result);
                 if (responseMessage.Result.IsSuccessStatusCode)
                 {
@@ -81,7 +118,7 @@ namespace Celin.AIS
             }
             catch (Exception e)
             {
-                logger.Trace(e);
+                logger.Debug(e);
                 logger.Error("Request:\n{0}\n{1}", e.Message, content.ReadAsStringAsync().Result);
                 return new Tuple<bool, T>(false, new T());
             }
@@ -93,8 +130,8 @@ namespace Celin.AIS
         public Server(string baseUrl)
         {
             logger.Debug("BaseUrl: {0}", baseUrl);
-            this.BaseUrl = baseUrl;
-            this.Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
+            BaseUrl = baseUrl;
+            Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
