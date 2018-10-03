@@ -54,6 +54,7 @@ namespace Celin.AIS
         public Value[] value { get; set; }
         public string controlId { get; set; }
         public string @operator { get; set; }
+        public string aggregation { get; set; }
     }
     public class Query
     {
@@ -61,6 +62,20 @@ namespace Celin.AIS
         public bool autoFind { get; set; }
         public string matchType { get; set; }
         public bool autoClear { get; set; }
+    }
+    public class AggregationItem
+    {
+        public string aggregation { get; set; }
+        public string column { get; set; }
+        public string direction { get; set; }
+        public string specialHandling { get; set; }
+    }
+    public class Aggregation
+    {
+        public List<AggregationItem> aggregations { get; set; } = new List<AggregationItem>();
+        public List<AggregationItem> groupBy { get; set; } = new List<AggregationItem>();
+        public List<AggregationItem> orderBy { get; set; } = new List<AggregationItem>();
+
     }
     public class ActionRequest
     {
@@ -112,6 +127,8 @@ namespace Celin.AIS
         public string targetName { get; set; }
         public string targetType { get; set; }
         public string dataServiceType;
+        public Aggregation aggregation { get; set; }
+        public List<Condition> having { get; set; }
     }
     public class BatchformRequest : Service
     {
