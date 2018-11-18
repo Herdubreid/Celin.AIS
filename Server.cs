@@ -31,18 +31,18 @@ namespace Celin.AIS
         /// </summary>
         /// <returns>Authentication success flag.</returns>
         /// <remarks>Sets the AuthResponse property if successful.</remarks>
-        public bool Authenticate(CancellationTokenSource cancel = null)
+        public async Task<bool> AuthenticateAsync(CancellationTokenSource cancel = null)
         {
             if (cancel is null) cancel = new CancellationTokenSource();
             HttpContent content = new StringContent(JsonConvert.SerializeObject(AuthRequest), Encoding.UTF8, mediaType);
             logger.Trace(content.ReadAsStringAsync().Result);
             try
             {
-                Task<HttpResponseMessage> responseMessage = Client.PostAsync(BaseUrl + AuthRequest.SERVICE, content, cancel.Token);
-                logger.Trace(responseMessage.Result);
-                if (responseMessage.Result.IsSuccessStatusCode)
+                HttpResponseMessage responseMessage = await Client.PostAsync(BaseUrl + AuthRequest.SERVICE, content, cancel.Token);
+                logger.Trace(responseMessage);
+                if (responseMessage.IsSuccessStatusCode)
                 {
-                    AuthResponse = JsonConvert.DeserializeObject<AuthResponse>(responseMessage.Result.Content.ReadAsStringAsync().Result);
+                    AuthResponse = JsonConvert.DeserializeObject<AuthResponse>(responseMessage.Content.ReadAsStringAsync().Result);
                     return true;
                 }
             }
@@ -59,7 +59,7 @@ namespace Celin.AIS
         /// </summary>
         /// <returns>Logut success flag.</returns>
         /// <remarks>Clears the AuthResponse property if successful.</remarks>
-        public bool Logout()
+        public async Task<bool> LogoutAsync()
         {
             try
             {
@@ -69,15 +69,15 @@ namespace Celin.AIS
                 };
                 HttpContent content = new StringContent(JsonConvert.SerializeObject(logout), Encoding.UTF8, mediaType);
                 logger.Trace(content.ReadAsStringAsync().Result);
-                Task<HttpResponseMessage> responseMessage = Client.PostAsync(BaseUrl + logout.SERVICE, content);
-                if (responseMessage.Result.IsSuccessStatusCode)
+                HttpResponseMessage responseMessage = await Client.PostAsync(BaseUrl + logout.SERVICE, content);
+                if (responseMessage.IsSuccessStatusCode)
                 {
                     AuthResponse = null;
                     return true;
                 }
                 else
                 {
-                    logger.Warn("Logout:\n{0}", responseMessage.Result.ReasonPhrase);
+                    logger.Warn("Logout:\n{0}", responseMessage.ReasonPhrase);
                     return false;
                 }
             }
@@ -94,7 +94,7 @@ namespace Celin.AIS
         /// <returns>A Tuple with success flag and the response object.</returns>
         /// <param name="request">The Request object.</param>
         /// <typeparam name="T">Response object type.</typeparam>
-        public Tuple<bool, T> Request<T>(Request request, CancellationTokenSource cancel = null) where T :  new()
+        public async Task<Tuple<bool, T>> RequestAsync<T>(Request request, CancellationTokenSource cancel = null) where T :  new()
         {
             if (cancel is null) cancel = new CancellationTokenSource();
             request.deviceName = AuthRequest.deviceName;
@@ -103,16 +103,16 @@ namespace Celin.AIS
             logger.Trace(content.ReadAsStringAsync().Result);
             try
             {
-                Task<HttpResponseMessage> responseMessage = Client.PostAsync(BaseUrl + request.SERVICE, content, cancel.Token);
-                logger.Trace(responseMessage.Result);
-                if (responseMessage.Result.IsSuccessStatusCode)
+                HttpResponseMessage responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel.Token);
+                logger.Trace(responseMessage);
+                if (responseMessage.IsSuccessStatusCode)
                 {
-                    T result = JsonConvert.DeserializeObject<T>(responseMessage.Result.Content.ReadAsStringAsync().Result);
+                    T result = JsonConvert.DeserializeObject<T>(responseMessage.Content.ReadAsStringAsync().Result);
                     return new Tuple<bool, T>(true, result);
                 }
                 else
                 {
-                    logger.Warn("Request:\n{0}\n{1}", responseMessage.Result.ReasonPhrase, content.ReadAsStringAsync().Result);
+                    logger.Warn("Request:\n{0}\n{1}", responseMessage.ReasonPhrase, content.ReadAsStringAsync().Result);
                     return new Tuple<bool, T>(false, new T());
                 }
             }
