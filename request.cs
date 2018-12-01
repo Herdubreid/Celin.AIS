@@ -49,6 +49,11 @@ namespace Celin.AIS
         public string content { get; set; }
         public string specialValueId { get; set; }
     }
+    public class ComplexQuery
+    {
+        public Query query { get; set; }
+        public string andOr { get; set; }
+    }
     public class Condition
     {
         public Value[] value { get; set; }
@@ -58,7 +63,8 @@ namespace Celin.AIS
     }
     public class Query
     {
-        public List<Condition> condition { get; set; } = new List<Condition>();
+        public List<ComplexQuery> complexQuery { get; set; }
+        public List<Condition> condition { get; set; }
         public bool autoFind { get; set; }
         public string matchType { get; set; }
         public bool autoClear { get; set; }
