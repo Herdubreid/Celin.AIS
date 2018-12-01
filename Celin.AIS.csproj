@@ -6,7 +6,7 @@
     <PackageVersion>0.9</PackageVersion>
     <Authors>Finnur Bragason</Authors>
     <Owners>Bragason and Associates Pty Ltd</Owners>
-    <Summary>Oracle E1/JDE AIS Interface</Summary>
+    <Summary>Oracle E1/JDE AIS Library</Summary>
     <PackageTags>Oracle, E1, JDE, AIS</PackageTags>
     <Title>Celin.AIS</Title>
     <PackageProjectUrl>https://github.com/Herdubreid/Celin.AIS</PackageProjectUrl>
@@ -19,9 +19,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Class1.cs" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="NLog" Version="4.5.9" />

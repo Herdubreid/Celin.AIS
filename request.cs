@@ -101,6 +101,7 @@ namespace Celin.AIS
         public bool aliasNaming { get; set; }
         public Query query { get; set; }
         public string outputType { get; set; }
+        public string formServiceDemo { get; set; }
     }
     public class FormRequest : Request
     {
