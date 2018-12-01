@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using System.Net;
+
 namespace Celin.AIS
 {
     /// <summary>
@@ -31,8 +33,9 @@ namespace Celin.AIS
         /// </summary>
         /// <returns>Authentication success flag.</returns>
         /// <remarks>Sets the AuthResponse property if successful.</remarks>
-        public async Task<bool> AuthenticateAsync(CancellationTokenSource cancel = null)
+        public async Task AuthenticateAsync(CancellationTokenSource cancel = null)
         {
+            AuthResponse = null;
             if (cancel is null) cancel = new CancellationTokenSource();
             HttpContent content = new StringContent(JsonConvert.SerializeObject(AuthRequest), Encoding.UTF8, mediaType);
             logger.Trace(content.ReadAsStringAsync().Result);
@@ -43,49 +46,42 @@ namespace Celin.AIS
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     AuthResponse = JsonConvert.DeserializeObject<AuthResponse>(responseMessage.Content.ReadAsStringAsync().Result);
-                    return true;
+                    return;
+                }
+                else
+                {
+                    logger.Warn("Request:\n{0}\n{1}", responseMessage.ReasonPhrase, content.ReadAsStringAsync().Result);
+                    throw new HttpWebException(responseMessage);
                 }
             }
             catch (Exception e)
             {
                 logger.Debug(e);
                 logger.Error("Authenticate:\n{0}", e.Message);
+                throw e;
             }
-            AuthResponse = null;
-            return false;
         }
         /// <summary>
         /// Logout this instance.
         /// </summary>
         /// <returns>Logut success flag.</returns>
         /// <remarks>Clears the AuthResponse property if successful.</remarks>
-        public async Task<bool> LogoutAsync()
+        public async Task LogoutAsync()
         {
             try
             {
                 var logout = new LogoutRequest
                 {
-                    token = AuthResponse.userInfo.token
+                    token = AuthResponse?.userInfo.token
                 };
                 HttpContent content = new StringContent(JsonConvert.SerializeObject(logout), Encoding.UTF8, mediaType);
                 logger.Trace(content.ReadAsStringAsync().Result);
                 HttpResponseMessage responseMessage = await Client.PostAsync(BaseUrl + logout.SERVICE, content);
-                if (responseMessage.IsSuccessStatusCode)
-                {
-                    AuthResponse = null;
-                    return true;
-                }
-                else
-                {
-                    logger.Warn("Logout:\n{0}", responseMessage.ReasonPhrase);
-                    return false;
-                }
             }
             catch (Exception e)
             {
                 logger.Debug(e);
                 logger.Error("Logout:\n{0}", e.Message);
-                return false;
             }
         }
         /// <summary>
@@ -94,11 +90,11 @@ namespace Celin.AIS
         /// <returns>A Tuple with success flag and the response object.</returns>
         /// <param name="request">The Request object.</param>
         /// <typeparam name="T">Response object type.</typeparam>
-        public async Task<Tuple<bool, T>> RequestAsync<T>(Request request, CancellationTokenSource cancel = null) where T :  new()
+        public async Task<T> RequestAsync<T>(Request request, CancellationTokenSource cancel = null) where T :  new()
         {
             if (cancel is null) cancel = new CancellationTokenSource();
             request.deviceName = AuthRequest.deviceName;
-            request.token = AuthResponse.userInfo.token;
+            request.token = AuthResponse?.userInfo.token;
             HttpContent content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, mediaType);
             logger.Trace(content.ReadAsStringAsync().Result);
             try
@@ -108,19 +104,18 @@ namespace Celin.AIS
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     T result = JsonConvert.DeserializeObject<T>(responseMessage.Content.ReadAsStringAsync().Result);
-                    return new Tuple<bool, T>(true, result);
+                    return result;
                 }
                 else
                 {
-                    logger.Warn("Request:\n{0}\n{1}", responseMessage.ReasonPhrase, content.ReadAsStringAsync().Result);
-                    return new Tuple<bool, T>(false, new T());
+                    logger.Warn("Request:\n{0}\n{1}", responseMessage.ReasonPhrase, JsonConvert.SerializeObject(request, Formatting.Indented));
+                    throw new HttpWebException(responseMessage);
                 }
             }
             catch (Exception e)
             {
                 logger.Debug(e);
-                logger.Error("Request:\n{0}\n{1}", e.Message, content.ReadAsStringAsync().Result);
-                return new Tuple<bool, T>(false, new T());
+                throw e;
             }
         }
         /// <summary>
