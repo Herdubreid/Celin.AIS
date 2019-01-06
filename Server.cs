@@ -50,7 +50,7 @@ namespace Celin.AIS
                 }
                 else
                 {
-                    logger.Warn("Request:\n{0}\n{1}", responseMessage.ReasonPhrase, content.ReadAsStringAsync().Result);
+                    logger.Warn("Request:\n{0}", responseMessage.ReasonPhrase);
                     throw new HttpWebException(responseMessage);
                 }
             }
@@ -58,7 +58,7 @@ namespace Celin.AIS
             {
                 logger.Debug(e);
                 logger.Error("Authenticate:\n{0}", e.Message);
-                throw e;
+                throw;
             }
         }
         /// <summary>
@@ -115,7 +115,7 @@ namespace Celin.AIS
             catch (Exception e)
             {
                 logger.Debug(e);
-                throw e;
+                throw;
             }
         }
         /// <summary>
