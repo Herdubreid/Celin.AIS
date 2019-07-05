@@ -65,9 +65,9 @@ namespace Celin.AIS
     {
         public List<ComplexQuery> complexQuery { get; set; }
         public List<Condition> condition { get; set; }
-        public bool autoFind { get; set; }
+        public bool? autoFind { get; set; }
         public string matchType { get; set; }
-        public bool autoClear { get; set; }
+        public bool? autoClear { get; set; }
     }
     public class AggregationItem
     {
@@ -86,7 +86,7 @@ namespace Celin.AIS
     public class ActionRequest
     {
         public string returnControlIDs { get; set; }
-        public List<Action> formActions { get; set; } = new List<Action>();
+        public List<Action> formActions { get; set; }
         public string formOID { get; set; }
         public string stopOnWarning { get; set; }
     }
@@ -104,7 +104,7 @@ namespace Celin.AIS
         public string findOnEntry { get; set; }
         public string returnControlIDs { get; set; }
         public string maxPageSize { get; set; }
-        public bool aliasNaming { get; set; }
+        public bool? aliasNaming { get; set; }
         public Query query { get; set; }
         public string outputType { get; set; }
         public string formServiceDemo { get; set; }
@@ -115,15 +115,15 @@ namespace Celin.AIS
         public string formServiceAction { get; set; }
         public string stopOnWarning { get; set; }
         public string queryObjectName { get; set; }
-        public List<Input> formInputs { get; set; } = new List<Input>();
-        public List<Action> formActions { get; set; } = new List<Action>();
+        public List<Input> formInputs { get; set; }
+        public List<Action> formActions { get; set; }
     }
     public class StackFormRequest : Request
     {
         public override string SERVICE { get; } = "appstack";
         public string action { get; set; }
         public FormRequest formRequest { get; set; }
-        public ActionRequest actionRequest { get; set; } = new ActionRequest();
+        public ActionRequest actionRequest { get; set; }
         public int stackId { get; set; }
         public int stateId { get; set; }
         public string rid { get; set; }
@@ -133,16 +133,16 @@ namespace Celin.AIS
         public override string SERVICE { get; } = "dataservice";
         public string targetName { get; set; }
         public string targetType { get; set; }
-        public string dataServiceType;
+        public string dataServiceType { get; set; }
         public Aggregation aggregation { get; set; }
         public List<Condition> having { get; set; }
+        public bool? batchDataRequest { get; set; }
+        public List<DatabrowserRequest> dataRequests { get; set; }
     }
     public class BatchformRequest : Service
     {
         public override string SERVICE { get; } = "batchformservice";
-        public List<FormRequest> formRequests { get; set; } = new List<FormRequest>();
-        public string token { get; set; }
-        public string deviceName { get; set; }
+        public List<FormRequest> formRequests { get; set; }
     }
     public abstract class MoRequest : Request
     {
