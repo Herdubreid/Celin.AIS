@@ -19,7 +19,7 @@ namespace Celin.AIS
     public class RowEvent
     {
         public int rowNumber { get; set; }
-        public List<ColumnEvent> gridColumnEvents { get; set; } = new List<ColumnEvent>();
+        public IEnumerable<ColumnEvent> gridColumnEvents { get; set; }
     }
     public class Grid
     {
@@ -27,11 +27,11 @@ namespace Celin.AIS
     }
     public class GridInsert : Grid
     {
-        public List<RowEvent> gridRowInsertEvents { get; set; } = new List<RowEvent>();
+        public IEnumerable<RowEvent> gridRowInsertEvents { get; set; }
     }
     public class GridUpdate : Grid
     {
-        public List<RowEvent> gridRowUpdateEvents { get; set; } = new List<RowEvent>();
+        public IEnumerable<RowEvent> gridRowUpdateEvents { get; set; }
     }
     public abstract class Action { }
     public class GridAction : Action
@@ -63,8 +63,8 @@ namespace Celin.AIS
     }
     public class Query
     {
-        public List<ComplexQuery> complexQuery { get; set; }
-        public List<Condition> condition { get; set; }
+        public IEnumerable<ComplexQuery> complexQuery { get; set; }
+        public IEnumerable<Condition> condition { get; set; }
         public bool? autoFind { get; set; }
         public string matchType { get; set; }
         public bool? autoClear { get; set; }
@@ -78,15 +78,14 @@ namespace Celin.AIS
     }
     public class Aggregation
     {
-        public List<AggregationItem> aggregations { get; set; } = new List<AggregationItem>();
-        public List<AggregationItem> groupBy { get; set; } = new List<AggregationItem>();
-        public List<AggregationItem> orderBy { get; set; } = new List<AggregationItem>();
-
+        public IEnumerable<AggregationItem> aggregations { get; set; }
+        public IEnumerable<AggregationItem> groupBy { get; set; }
+        public IEnumerable<AggregationItem> orderBy { get; set; }
     }
     public class ActionRequest
     {
         public string returnControlIDs { get; set; }
-        public List<Action> formActions { get; set; }
+        public IEnumerable<Action> formActions { get; set; }
         public string formOID { get; set; }
         public string stopOnWarning { get; set; }
     }
@@ -115,8 +114,8 @@ namespace Celin.AIS
         public string formServiceAction { get; set; }
         public string stopOnWarning { get; set; }
         public string queryObjectName { get; set; }
-        public List<Input> formInputs { get; set; }
-        public List<Action> formActions { get; set; }
+        public IEnumerable<Input> formInputs { get; set; }
+        public IEnumerable<Action> formActions { get; set; }
     }
     public class StackFormRequest : Request
     {
@@ -135,14 +134,14 @@ namespace Celin.AIS
         public string targetType { get; set; }
         public string dataServiceType { get; set; }
         public Aggregation aggregation { get; set; }
-        public List<Condition> having { get; set; }
+        public IEnumerable<Condition> having { get; set; }
         public bool? batchDataRequest { get; set; }
-        public List<DatabrowserRequest> dataRequests { get; set; }
+        public IEnumerable<DatabrowserRequest> dataRequests { get; set; }
     }
     public class BatchformRequest : Service
     {
         public override string SERVICE { get; } = "batchformservice";
-        public List<FormRequest> formRequests { get; set; }
+        public IEnumerable<FormRequest> formRequests { get; set; }
     }
     public abstract class MoRequest : Request
     {
