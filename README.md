@@ -24,7 +24,7 @@ try
 {
 	// Authenticate
 	await e1.AuthenticateAsync();
-    // Success...
+	// Success...
 ```
 
 ### Return Generic Response Type
@@ -91,15 +91,15 @@ Since we are only interested in Ids 19 and 20 from the grid, we can suppress red
 
 ```csharp
 	// Limit the response to Grid Columns Number and Name
-    ab.returnControlIDs = "1[19,20]";
+	ab.returnControlIDs = "1[19,20]";
 
 	// Submit the form Request with our AB class definition
 	var abRsp = await e1.RequestAsync<AddressBookForm>(ab);
 	// Print the Grid Items to the Console
-    foreach (var r in abRsp.fs_P01012_W01012B.data.gridData.rowset)
-    {
+	foreach (var r in abRsp.fs_P01012_W01012B.data.gridData.rowset)
+	{
 		Console.WriteLine("{0, 12} {1}", r.mnAddressNumber_19.value, r.sAlphaName_20.value);
-    }
+	}
 }
 catch (Exception e)
 {

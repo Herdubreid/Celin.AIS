@@ -3,16 +3,17 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>Celin.AIS</PackageId>
-    <PackageVersion>0.9</PackageVersion>
+    <PackageVersion>1.0</PackageVersion>
     <Authors>Finnur Bragason</Authors>
-    <Owners>Bragason and Associates Pty Ltd</Owners>
+    <Owners>Finnur Bragason</Owners>
     <Summary>Oracle E1/JDE AIS Library</Summary>
     <PackageTags>Oracle, E1, JDE, AIS</PackageTags>
     <Title>Celin.AIS</Title>
     <PackageProjectUrl>https://github.com/Herdubreid/Celin.AIS</PackageProjectUrl>
-    <Description>Oracle E1/JDE AIS Library</Description>
     <PackageLicenseUrl>https://raw.githubusercontent.com/Herdubreid/Celin.AIS/master/LICENSE</PackageLicenseUrl>
+    <Description>Oracle E1/JDE AIS Library</Description>
     <PackageIconUrl>https://www.gravatar.com/avatar/82cf5b024555fa259f9dd9e448afe2ee</PackageIconUrl>
+    <Company>Bragason and Associates Pty Ltd</Company>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
