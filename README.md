@@ -1,6 +1,6 @@
 # Celin.AIS
 
-Celin.AIS is a .NET Standard 2.0 Library for Oracle E1/JDE AIS.
+Celin.AIS is a .NET Standard 2.1 Library for Oracle E1/JDE AIS.
 
 ## Install
 
@@ -20,9 +20,10 @@ e1.AuthRequest.deviceName = "aisTest";
 e1.AuthRequest.username = "demo";
 e1.AuthRequest.password = "testing";
 
-// Authenticate
-if (e1.Authenticate())
+try
 {
+	// Authenticate
+	await e1.AuthenticateAsync();
     // Success...
 ```
 
@@ -34,27 +35,28 @@ Once a server instance has been authenticated, it can be used to make a form req
 3. Submit the instance to the `Request` method along with the desired response type (a generic `Newtonsoft.Json.Linq.JObject` in the below example). 
 
 ```csharp
-// Create an AB Form Request
-var ab = new FormRequest()
-{
-    formName = "P01012_W01012B",
-    version = "ZJDE0001",
-    formServiceAction = "R",
-    maxPageSize = "10",
-    formActions = new List<Celin.AIS.Action>()
-};
-// Set the Search Type to "C"
-ab.formActions.Add(new FormAction() { controlID = "54", command = "SetControlValue", value = "C" });
-// Press the Find Button
-ab.formActions.Add(new FormAction() { controlID = "15", command = "DoAction" });
+	// Create an AB Form Request
+	var ab = new FormRequest()
+	{
+		formName = "P01012_W01012B",
+		version = "ZJDE0001",
+		formServiceAction = "R",
+		maxPageSize = "10",
+		formActions = new List<Celin.AIS.Action>()
+	};
+	// Create Form Actions
+	ab.formActions = new[]
+	{
+		// Set the Search Type to "C"
+		new FormAction() { controlID = "54", command = "SetControlValue", value = "C" },
+		// Press the Find Button
+		new FormAction() { controlID = "15", command = "DoAction" }
+	};
 
-// Submit the Form Request with a Generic Response Object
-var genRsp = e1.Request<JObject>(ab);
-if (genRsp.Item1)
-{
-    // Request successful, dumpt the output to the Console
-    Console.WriteLine(genRsp.Item2);
-}
+	// Submit the Form Request with a Generic Response Object
+	var genRsp =  await e1.RequestAsync<JObject>(ab);
+	// Request successful, dumpt the output to the Console
+	Console.WriteLine(genRsp);
 ```
 
 ### Return a Custom Response Type
@@ -88,18 +90,20 @@ We know that address number is numeric so we can use `Celin.AIS.Number` as its t
 Since we are only interested in Ids 19 and 20 from the grid, we can suppress reduntant data by setting the `returnControlIDs` parameter to `1[19,20]`.
 
 ```csharp
-// Limit the response to Grid Columns Number and Name
-ab.returnControlIDs = "1[19,20]";
+	// Limit the response to Grid Columns Number and Name
+    ab.returnControlIDs = "1[19,20]";
 
-// Submit the form Request with our AB class definition
-var abRsp = e1.Request<AddressBookForm>(ab);
-if (abRsp.Item1)
-{
-    // Print the Grid Items to the Console
-    foreach (var r in abRsp.Item2.fs_P01012_W01012B.data.gridData.rowset)
+	// Submit the form Request with our AB class definition
+	var abRsp = await e1.RequestAsync<AddressBookForm>(ab);
+	// Print the Grid Items to the Console
+    foreach (var r in abRsp.fs_P01012_W01012B.data.gridData.rowset)
     {
-        Console.WriteLine("{0, 12} {1}", r.mnAddressNumber_19.value, r.sAlphaName_20.value);
+		Console.WriteLine("{0, 12} {1}", r.mnAddressNumber_19.value, r.sAlphaName_20.value);
     }
+}
+catch (Exception e)
+{
+	Console.WriteLine("Failed!\n", e.Message);
 }
 ```
 
