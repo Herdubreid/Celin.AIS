@@ -4,6 +4,11 @@ namespace Celin.AIS
     /*
      * AIS Response definitions
      */
+    public class FormField<T>
+    {
+        public string title { get; set; }
+        public T value { get; set; }
+    }
     public class Cell
     {
         public string title { get; set; }
@@ -70,6 +75,14 @@ namespace Celin.AIS
         public string rid { get; set; }
         public string currentApp { get; set; }
         public JArray sysErrors { get; set; }
+    }
+    public class AggregationOutput<T>
+    {
+        public T groupBy { get; set; }
+    }
+    public class AggregationResponse<T>
+    {
+        public T[] output { get; set; }
     }
     public class UserInfo
     {

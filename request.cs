@@ -19,7 +19,7 @@ namespace Celin.AIS
     public class RowEvent
     {
         public int rowNumber { get; set; }
-        public IEnumerable<ColumnEvent> gridColumnEvents { get; set; }
+        public List<ColumnEvent> gridColumnEvents { get; set; }
     }
     public class Grid
     {
@@ -27,25 +27,48 @@ namespace Celin.AIS
     }
     public class GridInsert : Grid
     {
-        public IEnumerable<RowEvent> gridRowInsertEvents { get; set; }
+        public List<RowEvent> gridRowInsertEvents { get; set; }
     }
     public class GridUpdate : Grid
     {
-        public IEnumerable<RowEvent> gridRowUpdateEvents { get; set; }
+        public List<RowEvent> gridRowUpdateEvents { get; set; }
     }
     public abstract class Action { }
     public class GridAction : Action
     {
+        public static readonly string SetGridCellValue = "SetGridCellValue";
+        public static readonly string SetGridComboValue = "SetGridComboValue";
         public Grid gridAction { get; set; }
     }
     public class FormAction : Action
     {
+        public static readonly string ClickGridCell = "ClickGridCell";
+        public static readonly string ClickGridColumnAggregate = "ClickGridColumnAggregate";
+        public static readonly string DoAction = "DoAction";
+        public static readonly string SelectAllRows = "SelectAllRows";
+        public static readonly string SelectRow = "SelectRow";
+        public static readonly string SetCheckBoxValue = "SetCheckBoxValue";
+        public static readonly string SetComboValue = "SetComboValue";
+        public static readonly string SetControlValue = "SetControlValue";
+        public static readonly string SetRadioButton = "SetRadioButton";
+        public static readonly string SetQBEValue = "SetQBEValue";
+        public static readonly string UnSelectAllRows = "UnSelectAllRows";
+        public static readonly string UnSelectRow = "UnSelectRow";
         public string controlID { get; set; }
         public string command { get; set; }
         public string value { get; set; }
     }
     public class Value
     {
+        public static string LITERAL = "LITERAL";
+        public static string LOGIN_USER = "LOGIN_USER";
+        public static string TODAY = "TODAY";
+        public static string TODAY_MINUS_DAY = "TODAY_MINUS_DAY";
+        public static string TODAY_MINUS_MONTH = "TODAY_MINUS_MONTH";
+        public static string TODAY_MINUS_YEAR = "TODAY_MINUS_YEAR";
+        public static string TODAY_PLUS_DAY = "TODAY_PLUS_DAY";
+        public static string TODAY_PLUS_MONTH = "TODAY_PLUS_MONTH";
+        public static string TODAY_PLUS_YEAR = "TODAY_PLUS_YEAR";
         public string content { get; set; }
         public string specialValueId { get; set; }
     }
@@ -56,6 +79,19 @@ namespace Celin.AIS
     }
     public class Condition
     {
+        public static string BETWEEN = "BETWEEN";
+        public static string EQUAL = "EQUAL";
+        public static string GREATER = "GREATER";
+        public static string GREATER_EQUAL = "GREATER_EQUAL";
+        public static string LESS = "LESS";
+        public static string LESS_EQUAL = "LESS_EQUAL";
+        public static string LIST = "LIST";
+        public static string NOT_EQUAL = "NOT_EQUAL";
+        public static string STR_BLANK = "STR_BLANK"; 
+        public static string STR_CONTAIN = "STR_CONTAIN";
+        public static string STR_END_WITH = "STR_END_WITH";
+        public static string STR_NOT_BLANK = "STR_NOT_BLANK";
+        public static string STR_START_WITH = "STR_START_WITH";
         public Value[] value { get; set; }
         public string controlId { get; set; }
         public string @operator { get; set; }
@@ -63,8 +99,10 @@ namespace Celin.AIS
     }
     public class Query
     {
-        public IEnumerable<ComplexQuery> complexQuery { get; set; }
-        public IEnumerable<Condition> condition { get; set; }
+        public static readonly string MATCH_ALL = "MATCH_ALL";
+        public static readonly string MATCH_ANY = "MATCH_ANY";
+        public List<ComplexQuery> complexQuery { get; set; }
+        public List<Condition> condition { get; set; }
         public bool? autoFind { get; set; }
         public string matchType { get; set; }
         public bool? autoClear { get; set; }
@@ -78,14 +116,14 @@ namespace Celin.AIS
     }
     public class Aggregation
     {
-        public IEnumerable<AggregationItem> aggregations { get; set; }
-        public IEnumerable<AggregationItem> groupBy { get; set; }
-        public IEnumerable<AggregationItem> orderBy { get; set; }
+        public List<AggregationItem> aggregations { get; set; }
+        public List<AggregationItem> groupBy { get; set; }
+        public List<AggregationItem> orderBy { get; set; }
     }
     public class ActionRequest
     {
         public string returnControlIDs { get; set; }
-        public IEnumerable<Action> formActions { get; set; }
+        public List<Action> formActions { get; set; }
         public string formOID { get; set; }
         public string stopOnWarning { get; set; }
     }
@@ -107,6 +145,7 @@ namespace Celin.AIS
         public Query query { get; set; }
         public string outputType { get; set; }
         public string formServiceDemo { get; set; }
+        public bool? bypassFormServiceEREvent { get; set; }
     }
     public class FormRequest : Request
     {
@@ -114,8 +153,8 @@ namespace Celin.AIS
         public string formServiceAction { get; set; }
         public string stopOnWarning { get; set; }
         public string queryObjectName { get; set; }
-        public IEnumerable<Input> formInputs { get; set; }
-        public IEnumerable<Action> formActions { get; set; }
+        public List<Input> formInputs { get; set; }
+        public List<Action> formActions { get; set; }
     }
     public class StackFormRequest : Request
     {
@@ -134,14 +173,14 @@ namespace Celin.AIS
         public string targetType { get; set; }
         public string dataServiceType { get; set; }
         public Aggregation aggregation { get; set; }
-        public IEnumerable<Condition> having { get; set; }
+        public List<Condition> having { get; set; }
         public bool? batchDataRequest { get; set; }
-        public IEnumerable<DatabrowserRequest> dataRequests { get; set; }
+        public List<DatabrowserRequest> dataRequests { get; set; }
     }
     public class BatchformRequest : Service
     {
         public override string SERVICE { get; } = "batchformservice";
-        public IEnumerable<FormRequest> formRequests { get; set; }
+        public List<FormRequest> formRequests { get; set; }
     }
     public abstract class MoRequest : Request
     {

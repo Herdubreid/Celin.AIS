@@ -14,15 +14,15 @@ namespace Celin.AIS
     /// </summary>
     public class Server
     {
-        static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public string BaseUrl { get; set; }
         readonly string mediaType = "application/json";
-        HttpClient Client { get; } = new HttpClient();
+        HttpClient Client { get; }
         /// <summary>
         /// Holds the Authentication Response Parameters.
         /// </summary>
         /// <value>The Authentication Response.</value>
-        public AuthResponse AuthResponse { get; private set; } = null;
+        public AuthResponse AuthResponse { get; set; } = null;
         /// <summary>
         /// Holds the Authentication Request Parameters.
         /// </summary>
@@ -36,12 +36,11 @@ namespace Celin.AIS
         public async Task AuthenticateAsync(CancellationTokenSource cancel = null)
         {
             AuthResponse = null;
-            if (cancel is null) cancel = new CancellationTokenSource();
             HttpContent content = new StringContent(JsonConvert.SerializeObject(AuthRequest), Encoding.UTF8, mediaType);
             logger.Trace(content.ReadAsStringAsync().Result);
             try
             {
-                HttpResponseMessage responseMessage = await Client.PostAsync(BaseUrl + AuthRequest.SERVICE, content, cancel.Token);
+                HttpResponseMessage responseMessage = await Client.PostAsync(BaseUrl + AuthRequest.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token);
                 logger.Trace(responseMessage);
                 if (responseMessage.IsSuccessStatusCode)
                 {
@@ -76,7 +75,8 @@ namespace Celin.AIS
                 };
                 HttpContent content = new StringContent(JsonConvert.SerializeObject(logout), Encoding.UTF8, mediaType);
                 logger.Trace(content.ReadAsStringAsync().Result);
-                HttpResponseMessage responseMessage = await Client.PostAsync(BaseUrl + logout.SERVICE, content);
+                _ = await Client.PostAsync(BaseUrl + logout.SERVICE, content);
+                AuthResponse = null;
             }
             catch (Exception e)
             {
@@ -92,14 +92,13 @@ namespace Celin.AIS
         /// <typeparam name="T">Response object type.</typeparam>
         public async Task<T> RequestAsync<T>(Request request, CancellationTokenSource cancel = null) where T :  new()
         {
-            if (cancel is null) cancel = new CancellationTokenSource();
             request.deviceName = AuthRequest.deviceName;
             request.token = AuthResponse?.userInfo.token;
             HttpContent content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, mediaType);
             logger.Trace(content.ReadAsStringAsync().Result);
             try
             {
-                HttpResponseMessage responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel.Token);
+                HttpResponseMessage responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token);
                 logger.Trace(responseMessage);
                 if (responseMessage.IsSuccessStatusCode)
                 {
@@ -122,9 +121,10 @@ namespace Celin.AIS
         /// Initializes a new instance of the <see cref="T:Celin.AIS.Server"/> class.
         /// </summary>
         /// <param name="baseUrl">The Url for the AIS Server (for example https://e1.celin.io:9302/jderest/).</param>
-        public Server(string baseUrl)
+        public Server(string baseUrl, HttpClient httpClient = null)
         {
             logger.Debug("BaseUrl: {0}", baseUrl);
+            Client = httpClient ?? new HttpClient();
             BaseUrl = baseUrl;
             Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
