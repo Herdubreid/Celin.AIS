@@ -14,7 +14,7 @@ Install NuGet package or download the source from Github.
 
 ```csharp
 // Initalise E1 Server
-var e1 = new Server("http://e1.celin.io:9300/jderest/");
+var e1 = new Server("http://e1.celin.io:9300/jderest/v2/");
 // Set the authentication parameters
 e1.AuthRequest.deviceName = "aisTest";
 e1.AuthRequest.username = "demo";
@@ -72,8 +72,8 @@ namespace aisTest
 {
     public class AddressBookRow : Row
     {
-        public Number mnAddressNumber_19 { get; set; }
-        public String sAlphaName_20 { get; set; }
+        public FormField<long> z_AN8_21 { get; set; }
+        public FormField<string> z_ALPH_28 { get; set; }
     }
     public class AddressBookForm : FormResponse
     {

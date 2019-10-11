@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-namespace Celin.AIS
+﻿namespace Celin.AIS
 {
     /*
      * AIS Response definitions
@@ -71,10 +70,10 @@ namespace Celin.AIS
     }
     public class FormResponse : Response
     {
-        public string stackId { get; set; }
+        public int stackId { get; set; }
         public string rid { get; set; }
         public string currentApp { get; set; }
-        public JArray sysErrors { get; set; }
+        public string [] sysErrors { get; set; }
     }
     public class AggregationOutput<T>
     {
@@ -93,7 +92,7 @@ namespace Celin.AIS
         public string dateSeperator { get; set; }
         public string simpleDateFormat { get; set; }
         public string decimalFormat { get; set; }
-        public string addressNumber { get; set; }
+        public int addressNumber { get; set; }
         public string alphaName { get; set; }
         public string appsRelease { get; set; }
         public string country { get; set; }
@@ -105,9 +104,9 @@ namespace Celin.AIS
         public string role { get; set; }
         public string jasserver { get; set; }
         public UserInfo userInfo { get; set; }
-        public string userAuthorized { get; set; }
+        public bool userAuthorized { get; set; }
         public string version { get; set; }
         public string aisSessionCookie { get; set; }
-        public string adminAuthorized { get; set; }
+        public bool adminAuthorized { get; set; }
     }
 }

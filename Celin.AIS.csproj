@@ -16,7 +16,9 @@
     <Company>Bragason and Associates Pty Ltd</Company>
     <Version>1.1.0</Version>
     <PackageLicenseFile></PackageLicenseFile>
-    <PackageLicenseExpression><license type="expression">MIT</license></PackageLicenseExpression>
+    <PackageLicenseExpression>
+      <license type="expression">MIT</license>
+    </PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -29,11 +31,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="NLog" Version="4.6.6" />
     <PackageReference Include="NuGet.Build.Packaging" Version="0.2.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Text.Json" Version="4.6.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
   </ItemGroup>
 </Project>

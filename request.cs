@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+
 namespace Celin.AIS
 {
     /*
@@ -129,7 +130,6 @@ namespace Celin.AIS
     }
     public abstract class Service
     {
-        [JsonIgnore]
         public abstract string SERVICE { get; }
     }
     public abstract class Request : Service
@@ -149,6 +149,7 @@ namespace Celin.AIS
     }
     public class FormRequest : Request
     {
+        [JsonIgnore]
         public override string SERVICE { get; } = "formservice";
         public string formServiceAction { get; set; }
         public string stopOnWarning { get; set; }
@@ -158,6 +159,7 @@ namespace Celin.AIS
     }
     public class StackFormRequest : Request
     {
+        [JsonIgnore]
         public override string SERVICE { get; } = "appstack";
         public string action { get; set; }
         public FormRequest formRequest { get; set; }
@@ -168,6 +170,7 @@ namespace Celin.AIS
     }
     public class DatabrowserRequest : Request
     {
+        [JsonIgnore]
         public override string SERVICE { get; } = "dataservice";
         public string targetName { get; set; }
         public string targetType { get; set; }
@@ -179,6 +182,7 @@ namespace Celin.AIS
     }
     public class BatchformRequest : Service
     {
+        [JsonIgnore]
         public override string SERVICE { get; } = "batchformservice";
         public List<FormRequest> formRequests { get; set; }
     }
@@ -204,26 +208,32 @@ namespace Celin.AIS
     }
     public class MoGetText : MoRequest
     {
+        [JsonIgnore]
         public override string SERVICE { get; } = "file/gettext";
     }
     public class MoUpdateText : MoRequest
     {
+        [JsonIgnore]
         public override string SERVICE { get; } = "file/updatetext";
     }
     public class MoList : MoRequest
     {
+        [JsonIgnore]
         public override string SERVICE { get; } = "file/list";
     }
     public class MoUpload : MoRequest
     {
+        [JsonIgnore]
         public override string SERVICE { get; } = "file/upload";
     }
     public class MoDownload : MoRequest
     {
+        [JsonIgnore]
         public override string SERVICE { get; } = "file/download";
     }
     public class AuthRequest : Service
     {
+        [JsonIgnore]
         public override string SERVICE { get; } = "tokenrequest";
         public string username { get; set; }
         public string password { get; set; }
@@ -232,11 +242,13 @@ namespace Celin.AIS
     }
     public class LogoutRequest : Service
     {
-        public string token { get; set; }
+        [JsonIgnore]
         public override string SERVICE { get; } = "tokenrequest/logout";
+        public string token { get; set; }
     }
     public class DefaultConfig : Service
     {
+        [JsonIgnore]
         public override string SERVICE { get; } = "defaultconfig";
     }
 }
