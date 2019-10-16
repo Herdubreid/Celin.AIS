@@ -191,20 +191,43 @@ namespace Celin.AIS
         public string moStructure { get; set; }
         public string[] moKey { get; set; }
         public string inputText { get; set; }
-        public bool appendText { get; set; }
-        public bool includeURLs { get; set; }
-        public bool includeData { get; set; }
+        public bool? appendText { get; set; }
+        public bool? includeURLs { get; set; }
+        public bool? includeData { get; set; }
         public string[] moTypes { get; set; }
         public string[] extensions { get; set; }
         public string thumbnailSize { get; set; }
-        public int height { get; set; }
-        public int width { get; set; }
+        public int? height { get; set; }
+        public int? width { get; set; }
         public string fileName { get; set; }
         public string fileLocation { get; set; }
         public string itemName { get; set; }
-        public int sequence { get; set; }
+        public int? sequence { get; set; }
         public string thumbFileLocation { get; set; }
         public string downloadURL { get; set; }
+        public string urlText { get; set; }
+    }
+    public class FileAttachment
+    {
+        public string fileName { get; set; }
+        public string fileLocation { get; set; }
+        public string itemName { get; set; }
+        public int? sequence { get; set; }
+    }
+    public class MoDelete : MoRequest
+    {
+        [JsonIgnore]
+        public override string SERVICE { get; } = "file/delete";
+    }
+    public class MoAddUrl : MoRequest
+    {
+        [JsonIgnore]
+        public override string SERVICE { get; } = "file/addurl";
+    }
+    public class MoAddText : MoRequest
+    {
+        [JsonIgnore]
+        public override string SERVICE { get; } = "file/addtext";
     }
     public class MoGetText : MoRequest
     {
@@ -225,6 +248,7 @@ namespace Celin.AIS
     {
         [JsonIgnore]
         public override string SERVICE { get; } = "file/upload";
+        public FileAttachment file { get; set; }
     }
     public class MoDownload : MoRequest
     {

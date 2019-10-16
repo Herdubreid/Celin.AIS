@@ -71,9 +71,66 @@
     public class FormResponse : Response
     {
         public int stackId { get; set; }
+        public int stateId { get; set; }
         public string rid { get; set; }
         public string currentApp { get; set; }
         public string [] sysErrors { get; set; }
+    }
+    public class FileAttachmentResponse
+    {
+        public string uniquefilename { get; set; }
+        public string itemName { get; set; }
+        public int sequence { get; set; }
+    }
+    public class AttachmentItem
+    {
+        public string file { get; set; }
+        public string itemName { get; set; }
+        public string link { get; set; }
+        public int moType { get; set; }
+        public string queue { get; set; }
+        public int sequence { get; set; }
+        public string updateDate { get; set; }
+        public int updateHourOfDay { get; set; }
+        public int updateMinuteOfHour { get; set; }
+        public int updateSecondOfMinute { get; set; }
+        public int updateTimeStamp { get; set; }
+        public string updateUserID { get; set; }
+        public bool hasValidTimestamp { get; set; }
+        public bool isDefaultImage { get; set; }
+        public bool isImage { get; set; }
+        public bool isMisc { get; set; }
+        public bool isOLE { get; set; }
+        public bool isShortCut { get; set; }
+        public bool isText { get; set; }
+        public bool isUpdated { get; set; }
+        public bool isURL { get; set; }
+    }
+    public class AttachmentListResponse
+    {
+        public AttachmentItem[] mediaObjects { get; set; }
+    }
+    public class AttachmentResponse
+    {
+        public string ssoEnabled { get; set; }
+        public string text { get; set; }
+        public bool isRTF { get; set; }
+        public string itemName { get; set; }
+        public string addTextStatus { get; set; }
+        public string updateTextStatus { get; set; }
+        public string deleteStatus { get; set; }
+        public string saveURL { get; set; }
+        public string urlText { get; set; }
+        public string error { get; set; }
+        public int sequence { get; set; }
+    }
+    public class ErrorResponse
+    {
+        public string message { get; set; }
+        public string exception { get; set; }
+        public string timeStamp { get; set; }
+        public string type { get; set; }
+        public string userDefinedError { get; set; }
     }
     public class AggregationOutput<T>
     {

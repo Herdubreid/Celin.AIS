@@ -9,16 +9,10 @@ namespace Celin.AIS
     /// </summary>
     public class HttpWebException : WebException
     {
-        public class ContentType
-        {
-            public string message { get;set; }
-            public string exception { get; set; }
-            public string timeStamp { get; set; }
-        }
         /// <summary>
-        /// Content
+        /// E1 Error Response
         /// </summary>
-        public ContentType Content { get; }
+        public ErrorResponse ErrorResponse { get; }
         /// <summary>
         /// HttpStatusCode
         /// </summary>
@@ -26,7 +20,7 @@ namespace Celin.AIS
         public HttpWebException(HttpResponseMessage message) : base(message.ReasonPhrase)
         {
             HttpStatusCode = message.StatusCode;
-            Content = JsonSerializer.Deserialize<ContentType>(message.Content.ReadAsStringAsync().Result);
+            ErrorResponse = JsonSerializer.Deserialize<ErrorResponse>(message.Content.ReadAsStringAsync().Result);
         }
     }
 }
