@@ -1,4 +1,7 @@
-﻿namespace Celin.AIS
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace Celin.AIS
 {
     /*
      * AIS Response definitions
@@ -39,13 +42,19 @@
     public class GridData<R>
     {
         public int id { get; set; }
-        public object titles { get; set; }
+        public IDictionary<string, string> titles { get; set; }
+        public IDictionary<string, string> columns { get; set; }
         public R[] rowset { get; set; }
         public Summary summary { get; set; }
     }
     public class FormData<R>
     {
         public GridData<R> gridData { get; set; }
+    }
+    public class Output<R>
+    {
+        public R[] output { get; set; }
+        public ErrorResponse error { get; set; }
     }
     public class ErrorWarning
     {

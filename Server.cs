@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -7,7 +8,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace Celin.AIS
 {
@@ -18,7 +18,14 @@ namespace Celin.AIS
     {
         public string BaseUrl { get; set; }
         protected ILogger Logger { get; }
-        readonly JsonSerializerOptions jsonOptions = new JsonSerializerOptions
+        readonly JsonSerializerOptions jsonOutputOptions = new JsonSerializerOptions
+        {
+            Converters =
+            {
+                new DateJsonConverter()
+            }
+        };
+        readonly JsonSerializerOptions jsonInputOptions = new JsonSerializerOptions
         {
             IgnoreNullValues = true,
             Converters =
@@ -40,6 +47,36 @@ namespace Celin.AIS
         /// <value>The Authentication Request.</value>
         public AuthRequest AuthRequest { get; set; } = new AuthRequest { deviceName = "celin", requiredCapabilities = "grid,processingOption" };
         /// <summary>
+        /// Submit Default Configuration Request
+        /// </summary>
+        /// <param name="cancel">Cancellation object</param>
+        /// <returns>Success object</returns>
+        public async Task<JsonElement> DefaultConfiguration(CancellationTokenSource cancel = null)
+        {
+            HttpResponseMessage responseMessage;
+            var defaultConfig = new DefaultConfig();
+            try
+            {
+                responseMessage = await Client.GetAsync(BaseUrl + defaultConfig.SERVICE, cancel == null ? CancellationToken.None : cancel.Token);
+            }
+            catch (Exception e)
+            {
+                Logger?.LogError(e.Message);
+                throw;
+            }
+            Logger?.LogDebug("{0}\n{1}", defaultConfig.SERVICE, responseMessage.ReasonPhrase);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                return JsonSerializer.Deserialize<JsonElement>(responseMessage.Content.ReadAsStringAsync().Result);
+            }
+            else
+            {
+                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync().Result);
+                Logger?.LogError(responseMessage.ReasonPhrase);
+                throw new Exception(responseMessage.ReasonPhrase);
+            }
+        }
+        /// <summary>
         /// Authenticate this instance.
         /// </summary>
         /// <remarks>Sets the AuthResponse property if successful.</remarks>
@@ -47,7 +84,7 @@ namespace Celin.AIS
         {
             AuthResponse = null;
             HttpResponseMessage responseMessage;
-            HttpContent content = new StringContent(JsonSerializer.Serialize(AuthRequest, jsonOptions), Encoding.UTF8, mediaType);
+            HttpContent content = new StringContent(JsonSerializer.Serialize(AuthRequest, jsonInputOptions), Encoding.UTF8, mediaType);
             try
             {
                 responseMessage = await Client.PostAsync(BaseUrl + AuthRequest.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token);
@@ -83,9 +120,9 @@ namespace Celin.AIS
                 {
                     token = AuthResponse?.userInfo.token
                 };
-                HttpContent content = new StringContent(JsonSerializer.Serialize(logout, jsonOptions), Encoding.UTF8, mediaType);
+                HttpContent content = new StringContent(JsonSerializer.Serialize(logout, jsonInputOptions), Encoding.UTF8, mediaType);
                 Logger?.LogTrace(content.ReadAsStringAsync().Result);
-                _ = await Client.PostAsync(BaseUrl + logout.SERVICE, content);
+                await Client.PostAsync(BaseUrl + logout.SERVICE, content);
             }
             catch (Exception e)
             {
@@ -105,7 +142,7 @@ namespace Celin.AIS
             HttpResponseMessage responseMessage;
             request.deviceName = AuthRequest.deviceName;
             request.token = AuthResponse?.userInfo.token;
-            var content = new StringContent(JsonSerializer.Serialize(request, request.GetType(), jsonOptions), Encoding.UTF8, mediaType);
+            var content = new StringContent(JsonSerializer.Serialize(request, request.GetType(), jsonInputOptions), Encoding.UTF8, mediaType);
             try
             {
                 responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token);
@@ -122,7 +159,7 @@ namespace Celin.AIS
                 Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync().Result);
                 try
                 {
-                    T result = JsonSerializer.Deserialize<T>(responseMessage.Content.ReadAsStringAsync().Result);
+                    T result = JsonSerializer.Deserialize<T>(responseMessage.Content.ReadAsStringAsync().Result, jsonOutputOptions);
                     return result;
                 }
                 catch (Exception e)
@@ -149,9 +186,11 @@ namespace Celin.AIS
             HttpResponseMessage responseMessage;
             request.deviceName = AuthRequest.deviceName;
             request.token = AuthResponse?.userInfo.token;
-            MultipartFormDataContent content = new MultipartFormDataContent();
-            content.Add(new StringContent(JsonSerializer.Serialize(request, jsonOptions), Encoding.UTF8, mediaType), "moAdd");
-            content.Add(file, "file");
+            MultipartFormDataContent content = new MultipartFormDataContent
+            {
+                { new StringContent(JsonSerializer.Serialize(request, jsonInputOptions), Encoding.UTF8, mediaType), "moAdd" },
+                { file, "file" }
+            };
             try
             {
                 responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token);
@@ -194,7 +233,7 @@ namespace Celin.AIS
             HttpResponseMessage responseMessage;
             request.deviceName = AuthRequest.deviceName;
             request.token = (AuthResponse ?? throw new ArgumentNullException()).userInfo.token;
-            var content = new StringContent(JsonSerializer.Serialize(request, jsonOptions), Encoding.UTF8, mediaType);
+            var content = new StringContent(JsonSerializer.Serialize(request, jsonInputOptions), Encoding.UTF8, mediaType);
             try
             {
                 responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token);
@@ -217,10 +256,22 @@ namespace Celin.AIS
                 throw new HttpWebException(responseMessage);
             }
         }
+        /// <summary>
+        /// Submit File Attachment List Request
+        /// </summary>
+        /// <param name="request">The Request object</param>
+        /// <param name="cancel">Cancellation object</param>
+        /// <returns>Success object</returns>
         public async Task<AttachmentListResponse> RequestAsync(MoList request, CancellationTokenSource cancel = null)
         {
             return await RequestAsync<AttachmentListResponse>(request, cancel);
         }
+        /// <summary>
+        /// Submit Media Object Request
+        /// </summary>
+        /// <param name="request">The MO Request object</param>
+        /// <param name="cancel">Cancellation object</param>
+        /// <returns>Success object</returns>
         public async Task<AttachmentResponse> RequestAsync(MoRequest request, CancellationTokenSource cancel = null)
         {
             return await RequestAsync<AttachmentResponse>(request, cancel);

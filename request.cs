@@ -80,19 +80,19 @@ namespace Celin.AIS
     }
     public class Condition
     {
-        public static string BETWEEN = "BETWEEN";
-        public static string EQUAL = "EQUAL";
-        public static string GREATER = "GREATER";
-        public static string GREATER_EQUAL = "GREATER_EQUAL";
-        public static string LESS = "LESS";
-        public static string LESS_EQUAL = "LESS_EQUAL";
-        public static string LIST = "LIST";
-        public static string NOT_EQUAL = "NOT_EQUAL";
-        public static string STR_BLANK = "STR_BLANK"; 
-        public static string STR_CONTAIN = "STR_CONTAIN";
-        public static string STR_END_WITH = "STR_END_WITH";
-        public static string STR_NOT_BLANK = "STR_NOT_BLANK";
-        public static string STR_START_WITH = "STR_START_WITH";
+        public static readonly string BETWEEN = "BETWEEN";
+        public static readonly string EQUAL = "EQUAL";
+        public static readonly string GREATER = "GREATER";
+        public static readonly string GREATER_EQUAL = "GREATER_EQUAL";
+        public static readonly string LESS = "LESS";
+        public static readonly string LESS_EQUAL = "LESS_EQUAL";
+        public static readonly string LIST = "LIST";
+        public static readonly string NOT_EQUAL = "NOT_EQUAL";
+        public static readonly string STR_BLANK = "STR_BLANK"; 
+        public static readonly string STR_CONTAIN = "STR_CONTAIN";
+        public static readonly string STR_END_WITH = "STR_END_WITH";
+        public static readonly string STR_NOT_BLANK = "STR_NOT_BLANK";
+        public static readonly string STR_START_WITH = "STR_START_WITH";
         public Value[] value { get; set; }
         public string controlId { get; set; }
         public string @operator { get; set; }
@@ -161,6 +161,9 @@ namespace Celin.AIS
     {
         [JsonIgnore]
         public override string SERVICE { get; } = "appstack";
+        public static readonly string open = "open";
+        public static readonly string execute = "execute";
+        public static readonly string close = "close";
         public string action { get; set; }
         public FormRequest formRequest { get; set; }
         public ActionRequest actionRequest { get; set; }
@@ -196,7 +199,7 @@ namespace Celin.AIS
         public bool? includeData { get; set; }
         public string[] moTypes { get; set; }
         public string[] extensions { get; set; }
-        public string thumbnailSize { get; set; }
+        public int? thumbnailSize { get; set; }
         public int? height { get; set; }
         public int? width { get; set; }
         public string fileName { get; set; }

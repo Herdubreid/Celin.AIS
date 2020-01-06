@@ -3,22 +3,23 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>Celin.AIS</PackageId>
-    <PackageVersion>1.1</PackageVersion>
+    <PackageVersion>3.1.0</PackageVersion>
     <Authors>Finnur Bragason</Authors>
     <Owners>Finnur Bragason</Owners>
     <Summary>Oracle E1/JDE AIS Library</Summary>
     <PackageTags>Oracle, E1, JDE, AIS</PackageTags>
     <Title>Celin.AIS</Title>
     <PackageProjectUrl>https://github.com/Herdubreid/Celin.AIS</PackageProjectUrl>
-    <PackageLicenseUrl></PackageLicenseUrl>
     <Description>Oracle E1/JDE AIS Library</Description>
     <PackageIconUrl>https://www.gravatar.com/avatar/82cf5b024555fa259f9dd9e448afe2ee</PackageIconUrl>
     <Company>Bragason and Associates Pty Ltd</Company>
-    <Version>1.1.0</Version>
+    <Version>3.1.0</Version>
+    <PackageIcon>icon.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Herdubreid/Celin.AIS</RepositoryUrl>
+    <RepositoryType>Github</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>Bragson and Associates Pty Ltd 2019</Copyright>
     <PackageLicenseFile></PackageLicenseFile>
-    <PackageLicenseExpression>
-      <license type="expression">MIT</license>
-    </PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -26,7 +27,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="LICENSE" />
     <None Remove="LICENSE" />
   </ItemGroup>
 
@@ -36,6 +36,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Text.Json" Version="4.6.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageFile Include="icon.png" />
+  </ItemGroup>
+
 </Project>

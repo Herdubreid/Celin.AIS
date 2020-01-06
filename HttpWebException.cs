@@ -20,7 +20,11 @@ namespace Celin.AIS
         public HttpWebException(HttpResponseMessage message) : base(message.ReasonPhrase)
         {
             HttpStatusCode = message.StatusCode;
-            ErrorResponse = JsonSerializer.Deserialize<ErrorResponse>(message.Content.ReadAsStringAsync().Result);
+            try
+            {
+                ErrorResponse = JsonSerializer.Deserialize<ErrorResponse>(message.Content.ReadAsStringAsync().Result);
+            }
+            catch { }
         }
     }
 }
