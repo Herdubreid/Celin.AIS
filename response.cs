@@ -132,6 +132,7 @@ namespace Celin.AIS
         public string urlText { get; set; }
         public string error { get; set; }
         public int sequence { get; set; }
+        public AttachmentResponse[] textAttachments { get; set; }
     }
     public class ErrorResponse
     {

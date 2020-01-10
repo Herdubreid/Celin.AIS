@@ -134,9 +134,17 @@ namespace Celin.AIS
     }
     public abstract class Request : Service
     {
+        public static readonly string VERSION1 = "VERSION1";
+        public static readonly string GRID_DATA = "GRID_DATA";
+        public static readonly string VERSION2 = "VERSION2";
+        public static readonly string ORACLE = "ORACLE";
+        public static readonly string XML = "XML";
+        public static readonly string XMLSIMPLE = "XMLSIMPLE";
         public string formName { get; set; }
         public string version { get; set; }
         public string token { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
         public string deviceName { get; set; }
         public string findOnEntry { get; set; }
         public string returnControlIDs { get; set; }
@@ -206,6 +214,7 @@ namespace Celin.AIS
         public string fileLocation { get; set; }
         public string itemName { get; set; }
         public int? sequence { get; set; }
+        public bool? multipleMode { get; set; }
         public string thumbFileLocation { get; set; }
         public string downloadURL { get; set; }
         public string urlText { get; set; }

@@ -141,7 +141,15 @@ namespace Celin.AIS
         {
             HttpResponseMessage responseMessage;
             request.deviceName = AuthRequest.deviceName;
-            request.token = AuthResponse?.userInfo.token;
+            if (AuthResponse == null)
+            {
+                request.username = AuthRequest.username;
+                request.password = AuthRequest.password;
+            }
+            else
+            {
+                request.token = AuthResponse.userInfo.token;
+            }
             var content = new StringContent(JsonSerializer.Serialize(request, request.GetType(), jsonInputOptions), Encoding.UTF8, mediaType);
             try
             {
@@ -185,7 +193,15 @@ namespace Celin.AIS
         {
             HttpResponseMessage responseMessage;
             request.deviceName = AuthRequest.deviceName;
-            request.token = AuthResponse?.userInfo.token;
+            if (AuthResponse == null)
+            {
+                request.username = AuthRequest.username;
+                request.password = AuthRequest.password;
+            }
+            else
+            {
+                request.token = AuthResponse.userInfo.token;
+            }
             MultipartFormDataContent content = new MultipartFormDataContent
             {
                 { new StringContent(JsonSerializer.Serialize(request, jsonInputOptions), Encoding.UTF8, mediaType), "moAdd" },
@@ -232,7 +248,15 @@ namespace Celin.AIS
         {
             HttpResponseMessage responseMessage;
             request.deviceName = AuthRequest.deviceName;
-            request.token = (AuthResponse ?? throw new ArgumentNullException()).userInfo.token;
+            if (AuthResponse == null)
+            {
+                request.username = AuthRequest.username;
+                request.password = AuthRequest.password;
+            }
+            else
+            {
+                request.token = AuthResponse.userInfo.token;
+            }
             var content = new StringContent(JsonSerializer.Serialize(request, jsonInputOptions), Encoding.UTF8, mediaType);
             try
             {

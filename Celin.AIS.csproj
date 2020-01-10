@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>Celin.AIS</PackageId>
-    <PackageVersion>3.1.0</PackageVersion>
+    <PackageVersion>3.1.1</PackageVersion>
     <Authors>Finnur Bragason</Authors>
     <Owners>Finnur Bragason</Owners>
     <Summary>Oracle E1/JDE AIS Library</Summary>
@@ -13,7 +13,7 @@
     <Description>Oracle E1/JDE AIS Library</Description>
     <PackageIconUrl>https://www.gravatar.com/avatar/82cf5b024555fa259f9dd9e448afe2ee</PackageIconUrl>
     <Company>Bragason and Associates Pty Ltd</Company>
-    <Version>3.1.0</Version>
+    <Version>3.1.1</Version>
     <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/Herdubreid/Celin.AIS</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
