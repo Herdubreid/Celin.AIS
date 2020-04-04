@@ -6,6 +6,11 @@ namespace Celin.AIS
     /*
      * AIS Response definitions
      */
+    public class PoOption
+    {
+        public int type { get; set; }
+        public string value { get; set; }
+    }
     public class FormField<T>
     {
         public string title { get; set; }
@@ -69,6 +74,12 @@ namespace Celin.AIS
         public string message { get; set; }
         public string exception { get; set; }
         public string timeStamp { get; set; }
+    }
+    public class PoResponse<T> : Response
+    {
+        public string application { get; set; }
+        public string version { get; set; }
+        public T processingOptions { get; set; }
     }
     public class Form<F>
     {

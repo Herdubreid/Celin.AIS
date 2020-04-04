@@ -155,6 +155,12 @@ namespace Celin.AIS
         public string formServiceDemo { get; set; }
         public bool? bypassFormServiceEREvent { get; set; }
     }
+    public class PoRequest : Request
+    {
+        [JsonIgnore]
+        public override string SERVICE { get; } = "poservice";
+        public string applicationName { get; set; }
+    }
     public class FormRequest : Request
     {
         [JsonIgnore]
@@ -183,6 +189,10 @@ namespace Celin.AIS
     {
         [JsonIgnore]
         public override string SERVICE { get; } = "dataservice";
+        public static readonly string table = "table";
+        public static readonly string view = "view";
+        public static readonly string BROWSE = "BROWSE";
+        public static readonly string AGGREGATION = "AGGREGATION";
         public string targetName { get; set; }
         public string targetType { get; set; }
         public string dataServiceType { get; set; }

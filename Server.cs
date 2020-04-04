@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -57,7 +56,7 @@ namespace Celin.AIS
             var defaultConfig = new DefaultConfig();
             try
             {
-                responseMessage = await Client.GetAsync(BaseUrl + defaultConfig.SERVICE, cancel == null ? CancellationToken.None : cancel.Token);
+                responseMessage = await Client.GetAsync(BaseUrl + defaultConfig.SERVICE, cancel == null ? CancellationToken.None : cancel.Token).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -67,11 +66,11 @@ namespace Celin.AIS
             Logger?.LogDebug("{0}\n{1}", defaultConfig.SERVICE, responseMessage.ReasonPhrase);
             if (responseMessage.IsSuccessStatusCode)
             {
-                return JsonSerializer.Deserialize<JsonElement>(responseMessage.Content.ReadAsStringAsync().Result);
+                return JsonSerializer.Deserialize<JsonElement>(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
             }
             else
             {
-                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync().Result);
+                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
                 Logger?.LogError(responseMessage.ReasonPhrase);
                 throw new Exception(responseMessage.ReasonPhrase);
             }
@@ -87,7 +86,7 @@ namespace Celin.AIS
             HttpContent content = new StringContent(JsonSerializer.Serialize(AuthRequest, jsonInputOptions), Encoding.UTF8, mediaType);
             try
             {
-                responseMessage = await Client.PostAsync(BaseUrl + AuthRequest.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token);
+                responseMessage = await Client.PostAsync(BaseUrl + AuthRequest.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -95,16 +94,16 @@ namespace Celin.AIS
                 throw;
             }
             Logger?.LogDebug("{0}\n{1}", AuthRequest.ToString(), responseMessage.ReasonPhrase);
-            Logger?.LogTrace(content.ReadAsStringAsync().Result);
+            Logger?.LogTrace(await content.ReadAsStringAsync().ConfigureAwait(false));
             if (responseMessage.IsSuccessStatusCode)
             {
-                AuthResponse = JsonSerializer.Deserialize<AuthResponse>(responseMessage.Content.ReadAsStringAsync().Result);
-                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync().Result);
+                AuthResponse = JsonSerializer.Deserialize<AuthResponse>(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
                 return;
             }
             else
             {
-                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync().Result);
+                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
                 throw new HttpWebException(responseMessage);
             }
         }
@@ -121,8 +120,8 @@ namespace Celin.AIS
                     token = AuthResponse?.userInfo.token
                 };
                 HttpContent content = new StringContent(JsonSerializer.Serialize(logout, jsonInputOptions), Encoding.UTF8, mediaType);
-                Logger?.LogTrace(content.ReadAsStringAsync().Result);
-                await Client.PostAsync(BaseUrl + logout.SERVICE, content);
+                Logger?.LogTrace(await content.ReadAsStringAsync().ConfigureAwait(false));
+                await Client.PostAsync(BaseUrl + logout.SERVICE, content).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -153,7 +152,7 @@ namespace Celin.AIS
             var content = new StringContent(JsonSerializer.Serialize(request, request.GetType(), jsonInputOptions), Encoding.UTF8, mediaType);
             try
             {
-                responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token);
+                responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -161,13 +160,13 @@ namespace Celin.AIS
                 throw;
             }
             Logger?.LogDebug("{0}\n{1}", request.ToString(), responseMessage.ReasonPhrase);
-            Logger?.LogTrace(content.ReadAsStringAsync().Result);
+            Logger?.LogTrace(await content.ReadAsStringAsync().ConfigureAwait(false));
             if (responseMessage.IsSuccessStatusCode)
             {
-                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync().Result);
+                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
                 try
                 {
-                    T result = JsonSerializer.Deserialize<T>(responseMessage.Content.ReadAsStringAsync().Result, jsonOutputOptions);
+                    T result = JsonSerializer.Deserialize<T>(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false), jsonOutputOptions);
                     return result;
                 }
                 catch (Exception e)
@@ -178,7 +177,7 @@ namespace Celin.AIS
             }
             else
             {
-                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync().Result);
+                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
                 throw new HttpWebException(responseMessage);
             }
         }
@@ -209,7 +208,7 @@ namespace Celin.AIS
             };
             try
             {
-                responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token);
+                responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -260,7 +259,7 @@ namespace Celin.AIS
             var content = new StringContent(JsonSerializer.Serialize(request, jsonInputOptions), Encoding.UTF8, mediaType);
             try
             {
-                responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token);
+                responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -286,9 +285,9 @@ namespace Celin.AIS
         /// <param name="request">The Request object</param>
         /// <param name="cancel">Cancellation object</param>
         /// <returns>Success object</returns>
-        public async Task<AttachmentListResponse> RequestAsync(MoList request, CancellationTokenSource cancel = null)
+        public Task<AttachmentListResponse> RequestAsync(MoList request, CancellationTokenSource cancel = null)
         {
-            return await RequestAsync<AttachmentListResponse>(request, cancel);
+            return RequestAsync<AttachmentListResponse>(request, cancel);
         }
         /// <summary>
         /// Submit Media Object Request
@@ -296,9 +295,9 @@ namespace Celin.AIS
         /// <param name="request">The MO Request object</param>
         /// <param name="cancel">Cancellation object</param>
         /// <returns>Success object</returns>
-        public async Task<AttachmentResponse> RequestAsync(MoRequest request, CancellationTokenSource cancel = null)
+        public Task<AttachmentResponse> RequestAsync(MoRequest request, CancellationTokenSource cancel = null)
         {
-            return await RequestAsync<AttachmentResponse>(request, cancel);
+            return RequestAsync<AttachmentResponse>(request, cancel);
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Celin.AIS.Server"/> class.
