@@ -201,7 +201,7 @@ namespace Celin.AIS
         public bool? batchDataRequest { get; set; }
         public List<DatabrowserRequest> dataRequests { get; set; }
     }
-    public class BatchformRequest : Service
+    public class BatchformRequest : Request
     {
         [JsonIgnore]
         public override string SERVICE { get; } = "batchformservice";
