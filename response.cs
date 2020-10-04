@@ -145,6 +145,34 @@ namespace Celin.AIS
         public int sequence { get; set; }
         public AttachmentResponse[] textAttachments { get; set; }
     }
+    public class PreferenceResponse
+    {
+        public string objectName { get; set; }
+        public string type { get; set; }
+        public string preferenceData { get; set; }
+    }
+    public class Rowcount
+    {
+        public int records { get; set; }
+        public bool modifier { get; set; }
+        public int gridrows { get; set; }
+    }
+    public class WatchListResponse
+    {
+        public string watchListOBNM { get; set; }
+        public string name { get; set; }
+        public string formtitle { get; set; }
+        public string queryname { get; set; }
+        public Rowcount rowcount { get; set; }
+        public int lastRunTime { get; set; }
+        public string Description { get; set; }
+        public int warningThreshold { get; set; }
+        public int criticalThreshold { get; set; }
+        public string queryObjectName { get; set; }
+        public int maxRecords { get; set; }
+        public string formOID { get; set; }
+        public bool isCritical { get; set; }
+    }
     public class ErrorResponse
     {
         public string message { get; set; }

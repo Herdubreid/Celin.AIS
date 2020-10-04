@@ -136,7 +136,7 @@ namespace Celin.AIS
         /// <param name="cancel">Cancellation object</param>
         /// <returns>Success Response object</returns>
         /// <typeparam name="T">Response object type.</typeparam>
-        public async Task<T> RequestAsync<T>(Request request, CancellationTokenSource cancel = null) where T : new()
+        public async Task<T> RequestAsync<T>(Service request, CancellationTokenSource cancel = null) where T : new()
         {
             HttpResponseMessage responseMessage;
             request.deviceName = AuthRequest.deviceName;

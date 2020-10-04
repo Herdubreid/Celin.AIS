@@ -75,6 +75,8 @@ namespace Celin.AIS
     }
     public class ComplexQuery
     {
+        public static readonly string AND = "AND";
+        public static readonly string OR = "OR";
         public Query query { get; set; }
         public string andOr { get; set; }
     }
@@ -131,6 +133,12 @@ namespace Celin.AIS
     public abstract class Service
     {
         public abstract string SERVICE { get; }
+        public string token { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
+        public string deviceName { get; set; }
+        public string formName { get; set; }
+        public string version { get; set; }
     }
     public abstract class Request : Service
     {
@@ -140,26 +148,42 @@ namespace Celin.AIS
         public static readonly string ORACLE = "ORACLE";
         public static readonly string XML = "XML";
         public static readonly string XMLSIMPLE = "XMLSIMPLE";
-        public string formName { get; set; }
-        public string version { get; set; }
-        public string token { get; set; }
-        public string username { get; set; }
-        public string password { get; set; }
-        public string deviceName { get; set; }
         public string findOnEntry { get; set; }
         public string returnControlIDs { get; set; }
         public string maxPageSize { get; set; }
         public bool? aliasNaming { get; set; }
         public Query query { get; set; }
+        public Aggregation aggregation { get; set; }
         public string outputType { get; set; }
         public string formServiceDemo { get; set; }
         public bool? bypassFormServiceEREvent { get; set; }
     }
-    public class PoRequest : Request
+    public class PoRequest : Service
     {
         [JsonIgnore]
         public override string SERVICE { get; } = "poservice";
         public string applicationName { get; set; }
+    }
+    public class PreferenceRequest : Service
+    {
+        [JsonIgnore]
+        public override string SERVICE { get; } = "preference";
+        public static readonly string GET = "GET";
+        public static readonly string PUT = "PUT";
+        public string action { get; set; }
+        public string idList { get; set; }
+        public string objectName { get; set; }
+        public int sequence { get; set; }
+        public string preferenceData { get; set; }
+    }
+    public class WatchListRequest : Service
+    {
+        [JsonIgnore]
+        public override string SERVICE { get; } = "watchlist";
+        public bool? forceUpdate { get; set; }
+        public bool? setDirtyOnly { get; set; }
+        public string watchlistId { get; set; }
+        public string watchlistObjectName { get; set; }
     }
     public class FormRequest : Request
     {
@@ -196,7 +220,6 @@ namespace Celin.AIS
         public string targetName { get; set; }
         public string targetType { get; set; }
         public string dataServiceType { get; set; }
-        public Aggregation aggregation { get; set; }
         public List<Condition> having { get; set; }
         public bool? batchDataRequest { get; set; }
         public List<DatabrowserRequest> dataRequests { get; set; }
@@ -281,16 +304,12 @@ namespace Celin.AIS
     {
         [JsonIgnore]
         public override string SERVICE { get; } = "tokenrequest";
-        public string username { get; set; }
-        public string password { get; set; }
-        public string deviceName { get; set; }
         public string requiredCapabilities { get; set; }
     }
     public class LogoutRequest : Service
     {
         [JsonIgnore]
         public override string SERVICE { get; } = "tokenrequest/logout";
-        public string token { get; set; }
     }
     public class DefaultConfig : Service
     {
