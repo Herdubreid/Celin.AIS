@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Celin.AIS
@@ -104,13 +104,15 @@ namespace Celin.AIS
     }
     public class AttachmentItem
     {
+        public string downloadUrl { get; set; }
+        public string data { get; set; }
         public string file { get; set; }
         public string itemName { get; set; }
         public string link { get; set; }
         public int moType { get; set; }
         public string queue { get; set; }
         public int sequence { get; set; }
-        public string updateDate { get; set; }
+        public DateTime updateDate { get; set; }
         public int updateHourOfDay { get; set; }
         public int updateMinuteOfHour { get; set; }
         public int updateSecondOfMinute { get; set; }

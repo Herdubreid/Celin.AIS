@@ -156,6 +156,7 @@ namespace Celin.AIS
             }
             catch (Exception e)
             {
+                Logger?.LogError(await content.ReadAsStringAsync().ConfigureAwait(false));
                 Logger?.LogError(e.Message);
                 throw;
             }
