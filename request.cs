@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Celin.AIS
@@ -148,6 +148,8 @@ namespace Celin.AIS
         public static readonly string ORACLE = "ORACLE";
         public static readonly string XML = "XML";
         public static readonly string XMLSIMPLE = "XMLSIMPLE";
+        public static readonly string TRUE = "TRUE";
+        public static readonly string FALSE = "FALSE";
         public string findOnEntry { get; set; }
         public string returnControlIDs { get; set; }
         public string maxPageSize { get; set; }

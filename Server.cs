@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -50,13 +50,13 @@ namespace Celin.AIS
         /// </summary>
         /// <param name="cancel">Cancellation object</param>
         /// <returns>Success object</returns>
-        public async Task<JsonElement> DefaultConfiguration(CancellationTokenSource cancel = null)
+        public async Task<JsonElement> DefaultConfiguration(CancellationToken cancel = default(CancellationToken))
         {
             HttpResponseMessage responseMessage;
             var defaultConfig = new DefaultConfig();
             try
             {
-                responseMessage = await Client.GetAsync(BaseUrl + defaultConfig.SERVICE, cancel == null ? CancellationToken.None : cancel.Token).ConfigureAwait(false);
+                responseMessage = await Client.GetAsync(BaseUrl + defaultConfig.SERVICE, cancel).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -76,17 +76,53 @@ namespace Celin.AIS
             }
         }
         /// <summary>
+        /// Authenticate this instance with JWT
+        /// </summary>
+        /// <param name="Jason Web Token"></param>
+        /// <param name="Cancellation Token"></param>
+        /// <returns></returns>
+        public async Task AuthenticateAsync(string jwt, CancellationToken cancel = default(CancellationToken))
+        {
+            AuthResponse = null;
+            HttpResponseMessage responseMessage;
+            var requestMessage = new HttpRequestMessage
+            {
+                RequestUri = new Uri(BaseUrl + AuthRequest.SERVICE),
+                Method = HttpMethod.Post
+            };
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+            requestMessage.Content = new StringContent(string.Empty, Encoding.UTF8, mediaType);
+            try
+            {
+                responseMessage = await Client.SendAsync(requestMessage, cancel).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Logger?.LogError(e.Message);
+                throw;
+            }
+            Logger?.LogDebug(responseMessage.ReasonPhrase);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                AuthResponse = JsonSerializer.Deserialize<AuthResponse>(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+            }
+            else
+            {
+                throw new HttpWebException(responseMessage);
+            }
+        }
+        /// <summary>
         /// Authenticate this instance.
         /// </summary>
         /// <remarks>Sets the AuthResponse property if successful.</remarks>
-        public async Task AuthenticateAsync(CancellationTokenSource cancel = null)
+        public async Task AuthenticateAsync(CancellationToken cancel = default(CancellationToken))
         {
             AuthResponse = null;
             HttpResponseMessage responseMessage;
             HttpContent content = new StringContent(JsonSerializer.Serialize(AuthRequest, jsonInputOptions), Encoding.UTF8, mediaType);
             try
             {
-                responseMessage = await Client.PostAsync(BaseUrl + AuthRequest.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token).ConfigureAwait(false);
+                responseMessage = await Client.PostAsync(BaseUrl + AuthRequest.SERVICE, content, cancel).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -136,7 +172,7 @@ namespace Celin.AIS
         /// <param name="cancel">Cancellation object</param>
         /// <returns>Success Response object</returns>
         /// <typeparam name="T">Response object type.</typeparam>
-        public async Task<T> RequestAsync<T>(Service request, CancellationTokenSource cancel = null) where T : new()
+        public async Task<T> RequestAsync<T>(Service request, CancellationToken cancel = default(CancellationToken)) where T : new()
         {
             HttpResponseMessage responseMessage;
             request.deviceName = AuthRequest.deviceName;
@@ -152,7 +188,7 @@ namespace Celin.AIS
             var content = new StringContent(JsonSerializer.Serialize(request, request.GetType(), jsonInputOptions), Encoding.UTF8, mediaType);
             try
             {
-                responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token).ConfigureAwait(false);
+                responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -189,7 +225,7 @@ namespace Celin.AIS
         /// <param name="file">File to Upload</param>
         /// <param name="cancel">Cancellation Object</param>
         /// <returns>Success object</returns>
-        public async Task<FileAttachmentResponse> RequestAsync(MoUpload request, StreamContent file, CancellationTokenSource cancel = null)
+        public async Task<FileAttachmentResponse> RequestAsync(MoUpload request, StreamContent file, CancellationToken cancel = default(CancellationToken))
         {
             HttpResponseMessage responseMessage;
             request.deviceName = AuthRequest.deviceName;
@@ -209,7 +245,7 @@ namespace Celin.AIS
             };
             try
             {
-                responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token).ConfigureAwait(false);
+                responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -244,7 +280,7 @@ namespace Celin.AIS
         /// <param name="request">The Request object</param>
         /// <param name="cancel">Cancellation object</param>
         /// <returns>Success object</returns>
-        public async Task<Stream> RequestAsync(MoDownload request, CancellationTokenSource cancel = null)
+        public async Task<Stream> RequestAsync(MoDownload request, CancellationToken cancel = default(CancellationToken))
         {
             HttpResponseMessage responseMessage;
             request.deviceName = AuthRequest.deviceName;
@@ -260,7 +296,7 @@ namespace Celin.AIS
             var content = new StringContent(JsonSerializer.Serialize(request, jsonInputOptions), Encoding.UTF8, mediaType);
             try
             {
-                responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel == null ? CancellationToken.None : cancel.Token).ConfigureAwait(false);
+                responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -286,7 +322,7 @@ namespace Celin.AIS
         /// <param name="request">The Request object</param>
         /// <param name="cancel">Cancellation object</param>
         /// <returns>Success object</returns>
-        public Task<AttachmentListResponse> RequestAsync(MoList request, CancellationTokenSource cancel = null)
+        public Task<AttachmentListResponse> RequestAsync(MoList request, CancellationToken cancel = default(CancellationToken))
         {
             return RequestAsync<AttachmentListResponse>(request, cancel);
         }
@@ -296,7 +332,7 @@ namespace Celin.AIS
         /// <param name="request">The MO Request object</param>
         /// <param name="cancel">Cancellation object</param>
         /// <returns>Success object</returns>
-        public Task<AttachmentResponse> RequestAsync(MoRequest request, CancellationTokenSource cancel = null)
+        public Task<AttachmentResponse> RequestAsync(MoRequest request, CancellationToken cancel = default(CancellationToken))
         {
             return RequestAsync<AttachmentResponse>(request, cancel);
         }
