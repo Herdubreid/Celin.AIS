@@ -94,7 +94,25 @@ namespace Celin.AIS
         public int stateId { get; set; }
         public string rid { get; set; }
         public string currentApp { get; set; }
-        public string [] sysErrors { get; set; }
+        public string[] sysErrors { get; set; }
+    }
+    public class UBEResponse
+    {
+        public string reportName { get; set; }
+        public string reportVersion { get; set; }
+        public int jobNumber { get; set; }
+        public string executionServer { get; set; }
+        public string port { get; set; }
+        public string jobStatus { get; set; }
+        public string objectType { get; set; }
+        public string user { get; set; }
+        public string environment { get; set; }
+        public DateTime submitDate { get; set; }
+        public DateTime lastDate { get; set; }
+        public int submitTime { get; set; }
+        public int lastTime { get; set; }
+        public string oid { get; set; }
+        public string queueName { get; set; }
     }
     public class FileAttachmentResponse
     {
@@ -216,5 +234,9 @@ namespace Celin.AIS
         public string version { get; set; }
         public string aisSessionCookie { get; set; }
         public bool adminAuthorized { get; set; }
+    }
+    public class TokenValidationResponse : Response
+    {
+        public bool isValidSession { get; set; }
     }
 }

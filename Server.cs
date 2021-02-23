@@ -15,15 +15,17 @@ namespace Celin.AIS
     /// </summary>
     public class Server
     {
+        public bool HasBasicAuthentication => Client.DefaultRequestHeaders.Authorization != null;
         public string BaseUrl { get; set; }
-        protected ILogger Logger { get; }
-        readonly JsonSerializerOptions jsonOutputOptions = new JsonSerializerOptions
+        public JsonSerializerOptions JsonOutputOptions = new JsonSerializerOptions
         {
             Converters =
             {
-                new DateJsonConverter()
+                new DateJsonConverter(),
+                new UTimeJsonConverter()
             }
         };
+        protected ILogger Logger { get; }
         readonly JsonSerializerOptions jsonInputOptions = new JsonSerializerOptions
         {
             IgnoreNullValues = true,
@@ -44,13 +46,16 @@ namespace Celin.AIS
         /// Holds the Authentication Request Parameters.
         /// </summary>
         /// <value>The Authentication Request.</value>
-        public AuthRequest AuthRequest { get; set; } = new AuthRequest { deviceName = "celin", requiredCapabilities = "grid,processingOption" };
+        public AuthRequest AuthRequest { get; protected set; } = new AuthRequest { deviceName = "celin", requiredCapabilities = "grid,processingOption" };
+        public void SetBasicAuthentication(string username, string password) =>
+            Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}")));
         /// <summary>
         /// Submit Default Configuration Request
         /// </summary>
         /// <param name="cancel">Cancellation object</param>
         /// <returns>Success object</returns>
-        public async Task<JsonElement> DefaultConfiguration(CancellationToken cancel = default(CancellationToken))
+        public async Task<JsonElement> DefaultConfigurationAsync(CancellationToken cancel = default(CancellationToken))
         {
             HttpResponseMessage responseMessage;
             var defaultConfig = new DefaultConfig();
@@ -73,6 +78,38 @@ namespace Celin.AIS
                 Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
                 Logger?.LogError(responseMessage.ReasonPhrase);
                 throw new Exception(responseMessage.ReasonPhrase);
+            }
+        }
+        public async Task AuthenticateBasicAsync(string username, string password, CancellationToken cancel = default(CancellationToken))
+        {
+            AuthResponse = null;
+            HttpResponseMessage responseMessage;
+            var requestMessage = new HttpRequestMessage
+            {
+                RequestUri = new Uri(BaseUrl + AuthRequest.SERVICE),
+                Method = HttpMethod.Post
+            };
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic",
+                Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}")));
+            requestMessage.Content = new StringContent(JsonSerializer.Serialize(AuthRequest, jsonInputOptions), Encoding.UTF8, mediaType);
+            try
+            {
+                responseMessage = await Client.SendAsync(requestMessage, cancel).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Logger?.LogError(e.Message);
+                throw;
+            }
+            Logger?.LogDebug(responseMessage.ReasonPhrase);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                AuthResponse = JsonSerializer.Deserialize<AuthResponse>(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+            }
+            else
+            {
+                throw new HttpWebException(responseMessage);
             }
         }
         /// <summary>
@@ -105,6 +142,7 @@ namespace Celin.AIS
             if (responseMessage.IsSuccessStatusCode)
             {
                 AuthResponse = JsonSerializer.Deserialize<AuthResponse>(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
             }
             else
             {
@@ -129,7 +167,7 @@ namespace Celin.AIS
                 Logger?.LogError(e.Message);
                 throw;
             }
-            Logger?.LogDebug("{0}\n{1}", AuthRequest.ToString(), responseMessage.ReasonPhrase);
+            Logger?.LogDebug("{0}\n{1}", content.ToString(), responseMessage.ReasonPhrase);
             Logger?.LogTrace(await content.ReadAsStringAsync().ConfigureAwait(false));
             if (responseMessage.IsSuccessStatusCode)
             {
@@ -155,7 +193,7 @@ namespace Celin.AIS
                 {
                     token = AuthResponse?.userInfo.token
                 };
-                HttpContent content = new StringContent(JsonSerializer.Serialize(logout, jsonInputOptions), Encoding.UTF8, mediaType);
+                var content = new StringContent(JsonSerializer.Serialize(logout, jsonInputOptions), Encoding.UTF8, mediaType);
                 Logger?.LogTrace(await content.ReadAsStringAsync().ConfigureAwait(false));
                 await Client.PostAsync(BaseUrl + logout.SERVICE, content).ConfigureAwait(false);
             }
@@ -164,6 +202,57 @@ namespace Celin.AIS
                 Logger?.LogDebug(e.Message);
             }
             AuthResponse = null;
+        }
+        /// <summary>
+        /// Validate AIS Token
+        /// </summary>
+        /// <param name="touch">Renew token</param>
+        /// <param name="cancel">Cancellation object</param>
+        /// <returns>True/False</returns>
+        public async Task<bool> IsValidSessionAsync(bool touch = false, CancellationToken cancel = default(CancellationToken))
+        {
+            if (AuthResponse == null)
+            {
+                return false;
+            }
+            HttpResponseMessage responseMessage;
+            var request = new TokenValidationRequest
+            {
+                deviceName = AuthRequest.deviceName,
+                token = AuthResponse.userInfo.token,
+                touch = touch
+            };
+            var content = new StringContent(JsonSerializer.Serialize(request, jsonInputOptions), Encoding.UTF8, mediaType);
+            Logger?.LogTrace(await content.ReadAsStringAsync().ConfigureAwait(false));
+            try
+            {
+                responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Logger?.LogError(e, nameof(IsValidSessionAsync));
+                throw;
+            }
+            var body = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+            Logger?.LogDebug("{0}\n{1}", content.ToString(), responseMessage.ReasonPhrase);
+            Logger?.LogTrace(body);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                try
+                {
+                    var result = JsonSerializer.Deserialize<TokenValidationResponse>(body);
+                    return result.isValidSession;
+                }
+                catch (Exception e)
+                {
+                    Logger?.LogError(e, nameof(JsonSerializer.Deserialize));
+                    throw;
+                }
+            }
+            else
+            {
+                throw new HttpWebException(responseMessage);
+            }
         }
         /// <summary>
         /// Submit an AIS Form Request.
@@ -178,8 +267,11 @@ namespace Celin.AIS
             request.deviceName = AuthRequest.deviceName;
             if (AuthResponse == null)
             {
-                request.username = AuthRequest.username;
-                request.password = AuthRequest.password;
+                if (!HasBasicAuthentication)
+                {
+                    request.username = AuthRequest.username;
+                    request.password = AuthRequest.password;
+                }
             }
             else
             {
@@ -198,12 +290,17 @@ namespace Celin.AIS
             }
             Logger?.LogDebug("{0}\n{1}", request.ToString(), responseMessage.ReasonPhrase);
             Logger?.LogTrace(await content.ReadAsStringAsync().ConfigureAwait(false));
+            var body = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (responseMessage.IsSuccessStatusCode)
             {
-                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                Logger?.LogTrace(body);
                 try
                 {
-                    T result = JsonSerializer.Deserialize<T>(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false), jsonOutputOptions);
+                    if (string.IsNullOrEmpty(body))
+                    {
+                        return default(T);
+                    }
+                    T result = JsonSerializer.Deserialize<T>(body, JsonOutputOptions);
                     return result;
                 }
                 catch (Exception e)
@@ -214,7 +311,7 @@ namespace Celin.AIS
             }
             else
             {
-                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                Logger?.LogTrace(body);
                 throw new HttpWebException(responseMessage);
             }
         }
@@ -231,8 +328,11 @@ namespace Celin.AIS
             request.deviceName = AuthRequest.deviceName;
             if (AuthResponse == null)
             {
-                request.username = AuthRequest.username;
-                request.password = AuthRequest.password;
+                if (!HasBasicAuthentication)
+                {
+                    request.username = AuthRequest.username;
+                    request.password = AuthRequest.password;
+                }
             }
             else
             {
@@ -286,8 +386,11 @@ namespace Celin.AIS
             request.deviceName = AuthRequest.deviceName;
             if (AuthResponse == null)
             {
-                request.username = AuthRequest.username;
-                request.password = AuthRequest.password;
+                if (!HasBasicAuthentication)
+                {
+                    request.username = AuthRequest.username;
+                    request.password = AuthRequest.password;
+                }
             }
             else
             {

@@ -5,6 +5,24 @@ using System.Text.RegularExpressions;
 
 namespace Celin.AIS
 {
+    public class UTimeJsonConverter : JsonConverter<DateTimeOffset>
+    {
+        public override DateTimeOffset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            var json = JsonSerializer.Deserialize<string>(ref reader, options);
+            if (DateTimeOffset.TryParse(json, null,
+                System.Globalization.DateTimeStyles.AssumeUniversal, out var ts))
+            {
+                return ts;
+            }
+            return default(DateTimeOffset);
+        }
+
+        public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options)
+        {
+            throw new NotImplementedException();
+        }
+    }
     public class DateJsonConverter : JsonConverter<DateTime>
     {
         static readonly Regex PAT = new Regex(@"^(\d{4})(\d{2})(\d{2})$");
@@ -26,7 +44,7 @@ namespace Celin.AIS
                     catch { }
                 }
             }
-            return new DateTime(0);
+            return default(DateTime);
         }
 
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)

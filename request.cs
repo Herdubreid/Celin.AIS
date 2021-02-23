@@ -20,7 +20,7 @@ namespace Celin.AIS
     public class RowEvent
     {
         public int rowNumber { get; set; }
-        public List<ColumnEvent> gridColumnEvents { get; set; }
+        public IEnumerable<ColumnEvent> gridColumnEvents { get; set; }
     }
     public class Grid
     {
@@ -28,11 +28,11 @@ namespace Celin.AIS
     }
     public class GridInsert : Grid
     {
-        public List<RowEvent> gridRowInsertEvents { get; set; }
+        public IEnumerable<RowEvent> gridRowInsertEvents { get; set; }
     }
     public class GridUpdate : Grid
     {
-        public List<RowEvent> gridRowUpdateEvents { get; set; }
+        public IEnumerable<RowEvent> gridRowUpdateEvents { get; set; }
     }
     public abstract class Action { }
     public class GridAction : Action
@@ -104,14 +104,19 @@ namespace Celin.AIS
     {
         public static readonly string MATCH_ALL = "MATCH_ALL";
         public static readonly string MATCH_ANY = "MATCH_ANY";
-        public List<ComplexQuery> complexQuery { get; set; }
-        public List<Condition> condition { get; set; }
+        public IEnumerable<ComplexQuery> complexQuery { get; set; }
+        public IEnumerable<Condition> condition { get; set; }
         public bool? autoFind { get; set; }
         public string matchType { get; set; }
         public bool? autoClear { get; set; }
     }
     public class AggregationItem
     {
+        public static readonly string SUM = "SUM";
+        public static readonly string MIN = "MIN";
+        public static readonly string MAX = "MAX";
+        public static readonly string AVG = "AVG";
+        public static readonly string COUNT = "COUNT";
         public string aggregation { get; set; }
         public string column { get; set; }
         public string direction { get; set; }
@@ -119,14 +124,17 @@ namespace Celin.AIS
     }
     public class Aggregation
     {
-        public List<AggregationItem> aggregations { get; set; }
-        public List<AggregationItem> groupBy { get; set; }
-        public List<AggregationItem> orderBy { get; set; }
+        public static readonly string COUNT_DISTINCT = "COUNT_DISTINCT";
+        public static readonly string AVG_DISTINCT = "AVG_DISTINCT";
+        public static readonly string SUM_DISTINCT = "SUM_DISTINCT";
+        public IEnumerable<AggregationItem> aggregations { get; set; }
+        public IEnumerable<AggregationItem> groupBy { get; set; }
+        public IEnumerable<AggregationItem> orderBy { get; set; }
     }
     public class ActionRequest
     {
         public string returnControlIDs { get; set; }
-        public List<Action> formActions { get; set; }
+        public IEnumerable<Action> formActions { get; set; }
         public string formOID { get; set; }
         public string stopOnWarning { get; set; }
     }
@@ -191,11 +199,15 @@ namespace Celin.AIS
     {
         [JsonIgnore]
         public override string SERVICE { get; } = "formservice";
+        public static readonly string Create = "C";
+        public static readonly string Read = "R";
+        public static readonly string Update = "U";
+        public static readonly string Delete = "D";
         public string formServiceAction { get; set; }
         public string stopOnWarning { get; set; }
         public string queryObjectName { get; set; }
-        public List<Input> formInputs { get; set; }
-        public List<Action> formActions { get; set; }
+        public IEnumerable<Input> formInputs { get; set; }
+        public IEnumerable<Action> formActions { get; set; }
     }
     public class StackFormRequest : Request
     {
@@ -222,15 +234,83 @@ namespace Celin.AIS
         public string targetName { get; set; }
         public string targetType { get; set; }
         public string dataServiceType { get; set; }
-        public List<Condition> having { get; set; }
+        public IEnumerable<Condition> having { get; set; }
         public bool? batchDataRequest { get; set; }
-        public List<DatabrowserRequest> dataRequests { get; set; }
+        public IEnumerable<DatabrowserRequest> dataRequests { get; set; }
     }
     public class BatchformRequest : Request
     {
         [JsonIgnore]
         public override string SERVICE { get; } = "batchformservice";
-        public List<FormRequest> formRequests { get; set; }
+        public IEnumerable<FormRequest> formRequests { get; set; }
+    }
+    public class Predicate
+    {
+        public static readonly string SINGLE = "SINGLE";
+        public static readonly string LIST = "LIST";
+        public static readonly string RANGE = "RANGE";
+        public string literalType { get; set; }
+        public string[] values { get; set; }
+    }
+    public class Subject
+    {
+        public string view { get; set; }
+        public string dictItem { get; set; }
+        public string table { get; set; }
+    }
+    public class Criteria
+    {
+        public Subject subject { get; set; }
+        public Predicate predicate { get; set; }
+        public string comparisonType { get; set; }
+    }
+    public class DataSelection
+    {
+        public Criteria[] criteria { get; set; }
+    }
+    public class OrderByColumn
+    {
+        public string dictItem { get; set; }
+        public string table { get; set; }
+        public string direction { get; set; }
+        public bool levelBreak { get; set; }
+        public bool pageBreak { get; set; }
+        public int seq { get; set; }
+    }
+    public class DataSequence
+    {
+        public OrderByColumn[] orderByColumns { get; set; }
+    }
+    public abstract class UBERequest : Request
+    {
+        public string reportName { get; set; }
+        public string reportVersion { get; set; }
+        public bool fireAndForget { get; set; }
+        public string jasserver { get; set; }
+        public bool jdeDebugLog { get; set; }
+        public bool jdeLog { get; set; }
+        public int reportLoggingLevel { get; set; }
+        public string queueName { get; set; }
+        public Value[] poValues { get; set; }
+        public Value[] riValues { get; set; }
+        public DataSelection dataSelection { get; set; }
+        public DataSequence dataSequence { get; set; }
+    }
+    public class DiscoverUBERequest : UBERequest
+    {
+        [JsonIgnore]
+        public override string SERVICE { get; } = "report/discover";
+    }
+    public class LaunchUBERequest : UBERequest
+    {
+        [JsonIgnore]
+        public override string SERVICE { get; } = "report/execute";
+    }
+    public class StatusUBERequest : Request
+    {
+        [JsonIgnore]
+        public override string SERVICE { get; } = "report/status";
+        public int jobNumber { get; set; }
     }
     public abstract class MoRequest : Request
     {
@@ -307,6 +387,12 @@ namespace Celin.AIS
         [JsonIgnore]
         public override string SERVICE { get; } = "tokenrequest";
         public string requiredCapabilities { get; set; }
+    }
+    public class TokenValidationRequest : Service
+    {
+        [JsonIgnore]
+        public override string SERVICE { get; } = "tokenrequest/validate";
+        public bool touch { get; set; }
     }
     public class LogoutRequest : Service
     {

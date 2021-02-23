@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <PackageId>Celin.AIS</PackageId>
-    <PackageVersion>3.2.1</PackageVersion>
+    <PackageVersion>3.3.0</PackageVersion>
     <Authors>Finnur Bragason</Authors>
     <Owners>Finnur Bragason</Owners>
     <Summary>Oracle E1/JDE AIS Library</Summary>
@@ -13,15 +13,15 @@
     <Description>Oracle E1/JDE AIS Library</Description>
     <PackageIconUrl>https://www.gravatar.com/avatar/82cf5b024555fa259f9dd9e448afe2ee</PackageIconUrl>
     <Company>Bragason and Associates Pty Ltd</Company>
-    <Version>3.3.0</Version>
+    <Version>3.3.1</Version>
     <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/Herdubreid/Celin.AIS</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Bragson and Associates Pty Ltd 2019</Copyright>
     <PackageLicenseFile></PackageLicenseFile>
-    <AssemblyVersion>3.3.0.0</AssemblyVersion>
-    <FileVersion>3.3.0.0</FileVersion>
+    <AssemblyVersion>3.3.1.0</AssemblyVersion>
+    <FileVersion>3.3.1.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -37,8 +37,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Text.Json" Version="4.6.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.1" />
+    <PackageReference Include="System.Text.Json" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
