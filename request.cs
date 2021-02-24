@@ -95,7 +95,7 @@ namespace Celin.AIS
         public static readonly string STR_END_WITH = "STR_END_WITH";
         public static readonly string STR_NOT_BLANK = "STR_NOT_BLANK";
         public static readonly string STR_START_WITH = "STR_START_WITH";
-        public Value[] value { get; set; }
+        public IEnumerable<Value> value { get; set; }
         public string controlId { get; set; }
         public string @operator { get; set; }
         public string aggregation { get; set; }
