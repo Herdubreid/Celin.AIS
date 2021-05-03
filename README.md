@@ -9,6 +9,7 @@ Install NuGet package or download the source from Github.
 ## Getting Started
 
 <iframe width="100%" height="475" src="https://dotnetfiddle.net/Widget/eHxkOg" frameborder="0"></iframe>
+
 ### Return Generic Response Type
 
 Once a server instance has been authenticated, it can be used to make a form request.
