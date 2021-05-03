@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <PackageId>Celin.AIS</PackageId>
-    <PackageVersion>5.0.0</PackageVersion>
+    <PackageVersion>5.1.0</PackageVersion>
     <Authors>Finnur Bragason</Authors>
     <Owners>Finnur Bragason</Owners>
     <Summary>Oracle E1/JDE AIS Library</Summary>

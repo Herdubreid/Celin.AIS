@@ -30,4 +30,4 @@ Celin.AIS is a .NET 5 Library for Oracle E1/JDE AIS.
 
 ## License
 
-MIT © [Bragason and Associates Pty Ltd](fbragason@outlook.com)
+MIT © [Bragason and Associates Pty Ltd](mailto:fbragason@outlook.com)
