@@ -4,7 +4,7 @@ Celin.AIS is a .NET 5 Library for Oracle E1/JDE AIS.
 
 ## Install
 
-Install NuGet package or download the source from Github.
+[Install NuGet package](https://www.nuget.org/packages/Celin.AIS/) or download the source from Github.
 
 ## Demos
 
