@@ -234,8 +234,10 @@ namespace Celin.AIS
         public string targetName { get; set; }
         public string targetType { get; set; }
         public string dataServiceType { get; set; }
-        public IEnumerable<Condition> having { get; set; }
+        public bool? enableNextPageProcessing { get; set; }
+        public string nextPageTimeInterval { get; set; }
         public bool? batchDataRequest { get; set; }
+        public IEnumerable<Condition> having { get; set; }
         public IEnumerable<DatabrowserRequest> dataRequests { get; set; }
     }
     public class BatchformRequest : Request

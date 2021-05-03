@@ -85,8 +85,14 @@ namespace Celin.AIS
     {
         public F data { get; set; }
         public string title { get; set; }
-        public ErrorWarning[] errors { get; set; }
-        public ErrorWarning[] warnings { get; set; }
+        public IEnumerable<ErrorWarning> errors { get; set; }
+        public IEnumerable<ErrorWarning> warnings { get; set; }
+    }
+    public class Link
+    {
+        public string rel { get; set; }
+        public string href { get; set; }
+        public string context { get; set; }
     }
     public class FormResponse : Response
     {
@@ -94,7 +100,8 @@ namespace Celin.AIS
         public int stateId { get; set; }
         public string rid { get; set; }
         public string currentApp { get; set; }
-        public string[] sysErrors { get; set; }
+        public IEnumerable<ErrorWarning> sysErrors { get; set; }
+        public IEnumerable<Link> links { get; set; }
     }
     public class UBEResponse
     {

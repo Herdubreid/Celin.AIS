@@ -316,6 +316,52 @@ namespace Celin.AIS
             }
         }
         /// <summary>
+        /// Submit an AIS Next Request
+        /// </summary>
+        /// <typeparam name="T">The Returned Type</typeparam>
+        /// <param name="href">POS Request</param>
+        /// <param name="cancel">Cancel Token</param>
+        /// <returns></returns>
+        public async Task<T> RequestAsync<T>(string href, CancellationToken cancel = default(CancellationToken))
+        {
+            HttpResponseMessage responseMessage;
+            try
+            {
+                responseMessage = await Client.PostAsync(href, null, cancel).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Logger?.LogError(href);
+                Logger?.LogError(e.Message);
+                throw;
+            }
+            Logger?.LogDebug("{0}\n{1}", href, responseMessage.ReasonPhrase);
+            var body = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                Logger?.LogTrace(body);
+                try
+                {
+                    if (string.IsNullOrEmpty(body))
+                    {
+                        return default(T);
+                    }
+                    T result = JsonSerializer.Deserialize<T>(body, JsonOutputOptions);
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    Logger?.LogError(e.Message);
+                    throw;
+                }
+            }
+            else
+            {
+                Logger?.LogTrace(body);
+                throw new HttpWebException(responseMessage);
+            }
+        }
+        /// <summary>
         /// Submit File Attachment Upload Request
         /// </summary>
         /// <param name="request">The Request Object</param>

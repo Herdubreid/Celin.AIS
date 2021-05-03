@@ -6,27 +6,9 @@ Celin.AIS is a .NET Standard 2.1 Library for Oracle E1/JDE AIS.
 
 Install NuGet package or download the source from Github.
 
-## Usage
+## Getting Started
 
-1. Initialise a new `Celin.AIS.Server` instance with the AIS Url (note the trailing '/').
-2. Populate the `AuthRequest` member of the instance.
-3. Call the `Authenticate` method.
-
-```csharp
-// Initalise E1 Server
-var e1 = new Server("http://e1.celin.io:9300/jderest/v2/");
-// Set the authentication parameters
-e1.AuthRequest.deviceName = "aisTest";
-e1.AuthRequest.username = "demo";
-e1.AuthRequest.password = "testing";
-
-try
-{
-	// Authenticate
-	await e1.AuthenticateAsync();
-	// Success...
-```
-
+<iframe width="100%" height="475" src="https://dotnetfiddle.net/Widget/eHxkOg" frameborder="0"></iframe>
 ### Return Generic Response Type
 
 Once a server instance has been authenticated, it can be used to make a form request.
@@ -41,11 +23,10 @@ Once a server instance has been authenticated, it can be used to make a form req
 		formName = "P01012_W01012B",
 		version = "ZJDE0001",
 		formServiceAction = "R",
-		maxPageSize = "10",
-		formActions = new List<Celin.AIS.Action>()
+		maxPageSize = "10"
 	};
 	// Create Form Actions
-	ab.formActions = new[]
+	ab.formActions = new []
 	{
 		// Set the Search Type to "C"
 		new FormAction() { controlID = "54", command = "SetControlValue", value = "C" },
@@ -54,7 +35,7 @@ Once a server instance has been authenticated, it can be used to make a form req
 	};
 
 	// Submit the Form Request with a Generic Response Object
-	var genRsp =  await e1.RequestAsync<JObject>(ab);
+	var genRsp =  await e1.RequestAsync<JsonElement>(ab);
 	// Request successful, dumpt the output to the Console
 	Console.WriteLine(genRsp);
 ```
