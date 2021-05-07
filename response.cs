@@ -11,6 +11,11 @@ namespace Celin.AIS
         public int type { get; set; }
         public string value { get; set; }
     }
+    public class PoValue
+    {
+        public int id { get; set; }
+        public string value { get; set; }
+    }
     public class FormField<T>
     {
         public string title { get; set; }
@@ -215,6 +220,100 @@ namespace Celin.AIS
     public class AggregationResponse<T>
     {
         public T[] output { get; set; }
+    }
+    public class DdInfo
+    {
+        public string ddict { get; set; }
+        public string alias { get; set; }
+        public string longName { get; set; }
+        public string systemCode { get; set; }
+        public int type { get; set; }
+        public int length { get; set; }
+        public int decimals { get; set; }
+        public int dispDecimals { get; set; }
+        public string searchFormName { get; set; }
+        public string searchAppName { get; set; }
+        public int nextNumberIndex { get; set; }
+        public string nextNumberSystem { get; set; }
+        public int style { get; set; }
+        public string as400EditRule { get; set; }
+        public string as400EditParm1 { get; set; }
+        public string as400EditParm2 { get; set; }
+        public string editRuleBFName { get; set; }
+        public string as400DisplayRule { get; set; }
+        public string as400DisplayParm { get; set; }
+        public string dispRuleBFName { get; set; }
+        public int currency { get; set; }
+        public string dfltValue { get; set; }
+    }
+    public class Control
+    {
+        public int type { get; set; }
+        public int idControl { get; set; }
+        public int pageNumber { get; set; }
+        public int idObject { get; set; }
+        public string title { get; set; }
+        public string memberName { get; set; }
+        public IEnumerable<DdInfo> ddInfo { get; set; }
+    }
+    public class TabPage
+    {
+        public int type { get; set; }
+        public int idControl { get; set; }
+        public int pageNumber { get; set; }
+        public int idObject { get; set; }
+        public string title { get; set; }
+        public IEnumerable<Control> controls { get; set; }
+        public string poglossaryOverride { get; set; }
+    }
+    public class PoPrompt
+    {
+        public IEnumerable<TabPage> tabPages { get; set; }
+    }   
+    public class DataSelectionColumn
+    {
+        public int idEVDT { get; set; }
+        public string displayString { get; set; }
+        public int @type { get; set; }
+        public string view { get; set; }
+        public string dictItem { get; set; }
+        public string table { get; set; }
+    }
+    public class ReportSecurity
+    {
+        public bool canChangePO { get; set; }
+        public bool canRunPO { get; set; }
+        public bool canRunDataSelection { get; set; }
+        public bool hasFullDataSelectionAccess { get; set; }
+        public bool canAddDataSelection { get; set; }
+        public bool canModifyDataSelection { get; set; }
+        public int versionSecurityFlag { get; set; }
+    }
+    public class PrintOptions
+    {
+        public string printerName { get; set; }
+        public string paperType { get; set; }
+        public int orientation { get; set; }
+        public int printStyleSDT { get; set; }
+        public int numberCopies { get; set; }
+        public int paperSource { get; set; }
+        public bool printImmediate { get; set; }
+        public bool savePDLFile { get; set; }
+        public bool saveCSVFile { get; set; }
+        public string osaInterfaceName { get; set; }
+    }
+    public class UBEDiscoveryResponse
+    {
+        public string reportName { get; set; }
+        public string reportVersion { get; set; }
+        public DataSelection dataSelection { get; set; }
+        public DataSequence dataSequence { get; set; }
+        public IEnumerable<PoValue> poValues { get; set; }
+        public PoPrompt poPrompt { get; set; }
+        public IEnumerable<DataSelectionColumn> dataSelectionColumns { get; set; }
+        public ReportSecurity reportSecurity { get; set; }
+        public PrintOptions printOptions { get; set; }
+        public string lastModifiedUser { get; set; }
     }
     public class UserInfo
     {
