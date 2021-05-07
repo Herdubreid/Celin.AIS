@@ -55,7 +55,7 @@ namespace Celin.AIS
         /// </summary>
         /// <param name="cancel">Cancellation object</param>
         /// <returns>Success object</returns>
-        public async Task<JsonElement> DefaultConfigurationAsync(CancellationToken cancel = default(CancellationToken))
+        public async Task<JsonElement> DefaultConfigurationAsync(CancellationToken cancel = default)
         {
             HttpResponseMessage responseMessage;
             var defaultConfig = new DefaultConfig();
@@ -80,7 +80,7 @@ namespace Celin.AIS
                 throw new Exception(responseMessage.ReasonPhrase);
             }
         }
-        public async Task AuthenticateBasicAsync(string username, string password, CancellationToken cancel = default(CancellationToken))
+        public async Task AuthenticateBasicAsync(string username, string password, CancellationToken cancel = default)
         {
             AuthResponse = null;
             HttpResponseMessage responseMessage;
@@ -118,7 +118,7 @@ namespace Celin.AIS
         /// <param name="Jason Web Token"></param>
         /// <param name="Cancellation Token"></param>
         /// <returns></returns>
-        public async Task AuthenticateAsync(string jwt, CancellationToken cancel = default(CancellationToken))
+        public async Task AuthenticateAsync(string jwt, CancellationToken cancel = default)
         {
             AuthResponse = null;
             HttpResponseMessage responseMessage;
@@ -153,7 +153,7 @@ namespace Celin.AIS
         /// Authenticate this instance.
         /// </summary>
         /// <remarks>Sets the AuthResponse property if successful.</remarks>
-        public async Task AuthenticateAsync(CancellationToken cancel = default(CancellationToken))
+        public async Task AuthenticateAsync(CancellationToken cancel = default)
         {
             AuthResponse = null;
             HttpResponseMessage responseMessage;
@@ -207,9 +207,9 @@ namespace Celin.AIS
         /// Validate AIS Token
         /// </summary>
         /// <param name="touch">Renew token</param>
-        /// <param name="cancel">Cancellation object</param>
+        /// <param name="cancel">Cancellation token</param>
         /// <returns>True/False</returns>
-        public async Task<bool> IsValidSessionAsync(bool touch = false, CancellationToken cancel = default(CancellationToken))
+        public async Task<bool> IsValidSessionAsync(bool touch = false, CancellationToken cancel = default)
         {
             if (AuthResponse == null)
             {
@@ -258,10 +258,10 @@ namespace Celin.AIS
         /// Submit an AIS Form Request.
         /// </summary>
         /// <param name="request">The Request object.</param>
-        /// <param name="cancel">Cancellation object</param>
+        /// <param name="cancel">Cancellation token</param>
         /// <returns>Success Response object</returns>
         /// <typeparam name="T">Response object type.</typeparam>
-        public async Task<T> RequestAsync<T>(Service request, CancellationToken cancel = default(CancellationToken)) where T : new()
+        public async Task<T> RequestAsync<T>(Service request, CancellationToken cancel = default) where T : new()
         {
             HttpResponseMessage responseMessage;
             request.deviceName = AuthRequest.deviceName;
@@ -322,7 +322,7 @@ namespace Celin.AIS
         /// <param name="href">POS Request</param>
         /// <param name="cancel">Cancel Token</param>
         /// <returns></returns>
-        public async Task<T> RequestAsync<T>(string href, CancellationToken cancel = default(CancellationToken))
+        public async Task<T> RequestAsync<T>(string href, CancellationToken cancel = default)
         {
             HttpResponseMessage responseMessage;
             try
@@ -366,9 +366,9 @@ namespace Celin.AIS
         /// </summary>
         /// <param name="request">The Request Object</param>
         /// <param name="file">File to Upload</param>
-        /// <param name="cancel">Cancellation Object</param>
+        /// <param name="cancel">Cancellation token</param>
         /// <returns>Success object</returns>
-        public async Task<FileAttachmentResponse> RequestAsync(MoUpload request, StreamContent file, CancellationToken cancel = default(CancellationToken))
+        public async Task<FileAttachmentResponse> RequestAsync(MoUpload request, StreamContent file, CancellationToken cancel = default)
         {
             HttpResponseMessage responseMessage;
             request.deviceName = AuthRequest.deviceName;
@@ -424,9 +424,9 @@ namespace Celin.AIS
         /// Submit File Attachment Download Request
         /// </summary>
         /// <param name="request">The Request object</param>
-        /// <param name="cancel">Cancellation object</param>
+        /// <param name="cancel">Cancellation token</param>
         /// <returns>Success object</returns>
-        public async Task<Stream> RequestAsync(MoDownload request, CancellationToken cancel = default(CancellationToken))
+        public async Task<Stream> RequestAsync(MoDownload request, CancellationToken cancel = default)
         {
             HttpResponseMessage responseMessage;
             request.deviceName = AuthRequest.deviceName;
@@ -469,22 +469,34 @@ namespace Celin.AIS
         /// Submit File Attachment List Request
         /// </summary>
         /// <param name="request">The Request object</param>
-        /// <param name="cancel">Cancellation object</param>
+        /// <param name="cancel">Cancellation token</param>
         /// <returns>Success object</returns>
-        public Task<AttachmentListResponse> RequestAsync(MoList request, CancellationToken cancel = default(CancellationToken))
-        {
-            return RequestAsync<AttachmentListResponse>(request, cancel);
-        }
+        public Task<AttachmentListResponse> RequestAsync(MoList request, CancellationToken cancel = default)
+            => RequestAsync<AttachmentListResponse>(request, cancel);
         /// <summary>
         /// Submit Media Object Request
         /// </summary>
         /// <param name="request">The MO Request object</param>
-        /// <param name="cancel">Cancellation object</param>
+        /// <param name="cancel">Cancellation token</param>
         /// <returns>Success object</returns>
-        public Task<AttachmentResponse> RequestAsync(MoRequest request, CancellationToken cancel = default(CancellationToken))
-        {
-            return RequestAsync<AttachmentResponse>(request, cancel);
-        }
+        public Task<AttachmentResponse> RequestAsync(MoRequest request, CancellationToken cancel = default)
+            => RequestAsync<AttachmentResponse>(request, cancel);
+        /// <summary>
+        /// Submit UBE Discovery
+        /// </summary>
+        /// <param name="request">The DiscoveryUBERequest object</param>
+        /// <param name="cancel">Cancellation token</param>
+        /// <returns>DiscoverUBEResponse</returns>
+        public Task<DiscoveryUBEResponse> RequestAsync(DiscoverUBERequest request, CancellationToken cancel = default)
+            => RequestAsync<DiscoveryUBEResponse>(request, cancel);
+        /// <summary>
+        /// Submit UBE
+        /// </summary>
+        /// <param name="request">UBERequest object</param>
+        /// <param name="cancel">Cancellation token</param>
+        /// <returns>UBEResponse</returns>
+        public Task<UBEResponse> RequestAsync(UBERequest request, CancellationToken cancel = default)
+            => RequestAsync<UBEResponse>(request, cancel);
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Celin.AIS.Server"/> class.
         /// </summary>

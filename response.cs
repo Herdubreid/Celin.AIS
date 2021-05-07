@@ -302,7 +302,7 @@ namespace Celin.AIS
         public bool saveCSVFile { get; set; }
         public string osaInterfaceName { get; set; }
     }
-    public class UBEDiscoveryResponse
+    public class DiscoveryUBEResponse
     {
         public string reportName { get; set; }
         public string reportVersion { get; set; }
