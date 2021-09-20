@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -7,7 +8,7 @@ namespace Celin.AIS
     /// <summary>
     /// E1 Exception Class
     /// </summary>
-    public class HttpWebException : WebException
+    public class AisException : InvalidOperationException
     {
         /// <summary>
         /// E1 Error Response
@@ -17,7 +18,7 @@ namespace Celin.AIS
         /// HttpStatusCode
         /// </summary>
         public HttpStatusCode HttpStatusCode { get; }
-        public HttpWebException(HttpResponseMessage message) : base(message.ReasonPhrase)
+        public AisException(HttpResponseMessage message) : base(message.ReasonPhrase)
         {
             HttpStatusCode = message.StatusCode;
             try

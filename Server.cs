@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +29,7 @@ namespace Celin.AIS
         protected ILogger Logger { get; }
         readonly JsonSerializerOptions jsonInputOptions = new JsonSerializerOptions
         {
-            IgnoreNullValues = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             Converters =
             {
                 new ActionJsonConverter(),
@@ -109,7 +110,7 @@ namespace Celin.AIS
             }
             else
             {
-                throw new HttpWebException(responseMessage);
+                throw new AisException(responseMessage);
             }
         }
         /// <summary>
@@ -146,7 +147,7 @@ namespace Celin.AIS
             }
             else
             {
-                throw new HttpWebException(responseMessage);
+                throw new AisException(responseMessage);
             }
         }
         /// <summary>
@@ -178,7 +179,7 @@ namespace Celin.AIS
             else
             {
                 Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
-                throw new HttpWebException(responseMessage);
+                throw new AisException(responseMessage);
             }
         }
         /// <summary>
@@ -251,7 +252,7 @@ namespace Celin.AIS
             }
             else
             {
-                throw new HttpWebException(responseMessage);
+                throw new AisException(responseMessage);
             }
         }
         /// <summary>
@@ -312,7 +313,7 @@ namespace Celin.AIS
             else
             {
                 Logger?.LogTrace(body);
-                throw new HttpWebException(responseMessage);
+                throw new AisException(responseMessage);
             }
         }
         /// <summary>
@@ -358,7 +359,7 @@ namespace Celin.AIS
             else
             {
                 Logger?.LogTrace(body);
-                throw new HttpWebException(responseMessage);
+                throw new AisException(responseMessage);
             }
         }
         /// <summary>
@@ -417,7 +418,7 @@ namespace Celin.AIS
             else
             {
                 Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync().Result);
-                throw new HttpWebException(responseMessage);
+                throw new AisException(responseMessage);
             }
         }
         /// <summary>
@@ -462,7 +463,7 @@ namespace Celin.AIS
             else
             {
                 Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync().Result);
-                throw new HttpWebException(responseMessage);
+                throw new AisException(responseMessage);
             }
         }
         /// <summary>

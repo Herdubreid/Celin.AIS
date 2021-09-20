@@ -205,6 +205,10 @@ namespace Celin.AIS
         public string formOID { get; set; }
         public bool isCritical { get; set; }
     }
+    public class ErrorDetails
+    {
+        public IEnumerable<ErrorWarning> errors { get; set; }
+    }
     public class ErrorResponse
     {
         public string message { get; set; }
@@ -212,6 +216,7 @@ namespace Celin.AIS
         public string timeStamp { get; set; }
         public string type { get; set; }
         public string userDefinedError { get; set; }
+        public ErrorDetails errorDetails { get; set; }
     }
     public class AggregationOutput<T>
     {
