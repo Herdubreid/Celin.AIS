@@ -223,6 +223,10 @@ namespace Celin.AIS
         public int stateId { get; set; }
         public string rid { get; set; }
     }
+    public class Having
+    {
+        public IEnumerable<Condition> condition { get; set; }
+    }
     public class DatabrowserRequest : Request
     {
         [JsonIgnore]
@@ -237,7 +241,7 @@ namespace Celin.AIS
         public bool? enableNextPageProcessing { get; set; }
         public string nextPageTimeInterval { get; set; }
         public bool? batchDataRequest { get; set; }
-        public IEnumerable<Condition> having { get; set; }
+        public Having having { get; set; }
         public IEnumerable<DatabrowserRequest> dataRequests { get; set; }
     }
     public class BatchformRequest : Request
