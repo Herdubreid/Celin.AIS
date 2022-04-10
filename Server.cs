@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -11,10 +12,10 @@ using System.Threading.Tasks;
 
 namespace Celin.AIS
 {
-    /// <summary>
-    /// E1/JDE AIS Server Class.
-    /// </summary>
-    public class Server
+	/// <summary>
+	/// E1/JDE AIS Server Class.
+	/// </summary>
+	public class Server
     {
         public bool HasBasicAuthentication => Client.DefaultRequestHeaders.Authorization != null;
         public string BaseUrl { get; set; }
@@ -252,6 +253,56 @@ namespace Celin.AIS
             }
             else
             {
+                throw new AisException(responseMessage);
+            }
+        }
+        public async Task<T> TableRequestAsync<T>(string table, string[] fields = default, (string,string,string)[] filters = default, CancellationToken cancel = default) where T : new()
+        {
+            HttpResponseMessage responseMessage;
+            string[] auth = AuthResponse == null
+            ? HasBasicAuthentication
+                ? new[] { "" }
+                : new[] { $"$username={AuthRequest.username}", $"$password={AuthRequest.password}" }
+            : new[] { $"$token={AuthResponse.userInfo.token}" };
+
+            var request = string.Join('&', (fields == null ? Array.Empty<string>() : fields)
+                .Select(f => $"$field={f.ToUpper()}")
+                .Concat((filters == null ? Array.Empty<(string, string, string)>() : filters)
+                .Select(f => $"$filter={f.Item1.ToUpper()} {f.Item2.ToUpper()} {f.Item3}"))
+                .Concat(auth));
+
+            try
+            {
+                responseMessage = await Client.GetAsync($"{BaseUrl}dataservice/table/{table.ToUpper()}?{request}", cancel).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                Logger?.LogError(e.Message);
+                throw;
+            }
+            Logger?.LogDebug("{0}\n{1}", request.ToString(), responseMessage.ReasonPhrase);
+            var body = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                Logger?.LogTrace(body);
+                try
+                {
+                    if (string.IsNullOrEmpty(body))
+                    {
+                        return default(T);
+                    }
+                    T result = JsonSerializer.Deserialize<T>(body, JsonOutputOptions);
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    Logger?.LogError(e.Message);
+                    throw;
+                }
+            }
+            else
+            {
+                Logger?.LogTrace(body);
                 throw new AisException(responseMessage);
             }
         }

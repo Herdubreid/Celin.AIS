@@ -205,6 +205,7 @@ namespace Celin.AIS
         public static readonly string Delete = "D";
         public string formServiceAction { get; set; }
         public string stopOnWarning { get; set; }
+        public bool showActionControls { get; set; }
         public string queryObjectName { get; set; }
         public IEnumerable<Input> formInputs { get; set; }
         public IEnumerable<Action> formActions { get; set; }
