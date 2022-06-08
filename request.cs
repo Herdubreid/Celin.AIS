@@ -167,6 +167,7 @@ namespace Celin.AIS
         public string outputType { get; set; }
         public string formServiceDemo { get; set; }
         public bool? bypassFormServiceEREvent { get; set; }
+        public string loadBaseFormOnly { get; set; }
     }
     public class PoRequest : Service
     {
