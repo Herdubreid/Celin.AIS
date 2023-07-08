@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Celin.AIS
 {
+    /* Helpers */
+    public record FormField(int id, string alias, string Title, object Value);
+    public record FormFields(IEnumerable<FormField> data);
     /*
      * AIS Response definitions
      */
