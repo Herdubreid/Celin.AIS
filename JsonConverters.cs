@@ -30,10 +30,10 @@ namespace Celin.AIS
             }
         }
     }
-    public class FormFieldJsonConverter : JsonConverter<IEnumerable<FormField>>
+    public class FormFieldJsonConverter : JsonConverter<Dictionary<int, FormField>>
     {
         static readonly Regex FIELD = new Regex("z_(\\w+)_(\\d+)");
-        public override IEnumerable<FormField>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override Dictionary<int, FormField> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
 
@@ -47,33 +47,30 @@ namespace Celin.AIS
                     if (m.Success)
                     {
                         var f = JsonSerializer.Deserialize<JsonHelpers.JsonField>(e.Value);
-                        return new FormField(
-                            Convert.ToInt32(m.Groups[2].Value),
-                            m.Groups[1].Value,
-                            f.title,
-                            JsonHelpers.PropertyValue(f.value));
+                        return new Tuple<int, FormField>(Convert.ToInt32(m.Groups[2].Value),
+                            new FormField(m.Groups[1].Value, f.title, JsonHelpers.PropertyValue(f.value)));
                     }
                     return default;
                 })
                 .Where(e => e != default);
-            return res;
+            return res.ToDictionary(e => e.Item1, e => e.Item2);
         }
 
-        public override void Write(Utf8JsonWriter writer, IEnumerable<FormField> value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, Dictionary<int, FormField> value, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
         }
     }
-    public class GridRowJsonConverter : JsonConverter<IEnumerable<object>>
+    public class GridRowJsonConverter : JsonConverter<object[]>
     {
-        public override IEnumerable<object> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override object[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
 
-            return json.EnumerateObject().Select(c => JsonHelpers.PropertyValue(c.Value));
+            return json.EnumerateObject().Select(c => JsonHelpers.PropertyValue(c.Value)).ToArray();
         }
 
-        public override void Write(Utf8JsonWriter writer, IEnumerable<object> value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, object[] value, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
         }

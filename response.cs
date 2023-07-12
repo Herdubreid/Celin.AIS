@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace Celin.AIS
 {
     /* Helpers */
-    public record FormField(int id, string alias, string Title, object Value);
-    public record FormFields(IEnumerable<FormField> data);
+    public record FormField(string Alias, string Title, object Value);
+    public record FormFields(Dictionary<int, FormField> data);
     /*
      * AIS Response definitions
      */
