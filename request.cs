@@ -133,7 +133,6 @@ namespace Celin.AIS
     }
     public class ActionRequest
     {
-        public string returnControlIDs { get; set; }
         public IEnumerable<Action> formActions { get; set; }
         public string formOID { get; set; }
         public string stopOnWarning { get; set; }
