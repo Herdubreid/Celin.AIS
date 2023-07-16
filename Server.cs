@@ -550,6 +550,14 @@ namespace Celin.AIS
         public Task<UBEResponse> RequestAsync(UBERequest request, CancellationToken cancel = default)
             => RequestAsync<UBEResponse>(request, cancel);
         /// <summary>
+        /// Get Ube Status
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancel"></param>
+        /// <returns></returns>
+        public Task<UBEResponse> RequestAsync(StatusUBERequest request, CancellationToken cancel = default)
+            => RequestAsync<UBEResponse>(request, cancel);
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:Celin.AIS.Server"/> class.
         /// </summary>
         /// <param name="baseUrl">The Url for the AIS Server (for example https://e1.celin.io:9302/jderest/)</param>

@@ -288,6 +288,11 @@ namespace Celin.AIS
     {
         public OrderByColumn[] orderByColumns { get; set; }
     }
+    public class PoValues
+    {
+        public int id { get; set; }
+        public string value { get; set; }
+    }
     public abstract class UBERequest : Request
     {
         public string reportName { get; set; }
@@ -298,8 +303,8 @@ namespace Celin.AIS
         public bool jdeLog { get; set; }
         public int reportLoggingLevel { get; set; }
         public string queueName { get; set; }
-        public Value[] poValues { get; set; }
-        public Value[] riValues { get; set; }
+        public PoValue[] poValues { get; set; }
+        public PoValue[] riValues { get; set; }
         public DataSelection dataSelection { get; set; }
         public DataSequence dataSequence { get; set; }
     }
