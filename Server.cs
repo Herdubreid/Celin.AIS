@@ -256,24 +256,33 @@ namespace Celin.AIS
                 throw new AisException(responseMessage);
             }
         }
-        public async Task<T> TableRequestAsync<T>(string table, string[] fields = default, (string,string,string)[] filters = default, CancellationToken cancel = default) where T : new()
+        public async Task<T> DataRequestAsync<T>(string subject, string[] fields = default,
+            (string,string,string)[] filters = default,
+            string filterType = default,
+            string limit = default,
+            string[] sort = default,
+            CancellationToken cancel = default) where T : new()
         {
             HttpResponseMessage responseMessage;
             string[] auth = AuthResponse == null
             ? HasBasicAuthentication
                 ? new[] { "" }
                 : new[] { $"$username={AuthRequest.username}", $"$password={AuthRequest.password}" }
-            : new[] { $"$token={AuthResponse.userInfo.token}" };
+            : new[] { $"$token={AuthResponse.userInfo.token}", $"$device={AuthRequest.deviceName}" };
 
             var request = string.Join('&', (fields == null ? Array.Empty<string>() : fields)
                 .Select(f => $"$field={f.ToUpper()}")
                 .Concat((filters == null ? Array.Empty<(string, string, string)>() : filters)
-                .Select(f => $"$filter={f.Item1.ToUpper()} {f.Item2.ToUpper()} {f.Item3}"))
+                    .Select(f => $"$filter={f.Item1.ToUpper()} {f.Item2.ToUpper()} {f.Item3}"))
+                .Concat(filterType == null ? Array.Empty<string>() : new[] {$"$filterType={filterType}"})
+                .Concat(limit == null ? Array.Empty<string>() : new[] {$"$limit={limit}"})
+                .Concat((sort == null ? Array.Empty<string>() : sort)
+                    .Select(s => $"$sort={s}"))
                 .Concat(auth));
 
             try
             {
-                responseMessage = await Client.GetAsync($"{BaseUrl}dataservice/table/{table.ToUpper()}?{request}", cancel).ConfigureAwait(false);
+                responseMessage = await Client.GetAsync($"{BaseUrl}dataservice/{(subject[0].Equals('F') ? "table" : "view")}/{subject.ToUpper()}?{request}", cancel).ConfigureAwait(false);
             }
             catch (Exception e)
             {
