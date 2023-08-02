@@ -129,7 +129,7 @@ namespace Celin.AIS
             var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
             return json.TryGetProperty("controlID", out JsonElement _)
                 ? JsonSerializer.Deserialize<FormAction>(json.ToString(), options)
-                : (Action)JsonSerializer.Deserialize<GridAction>(json.ToString(), options);
+                : JsonSerializer.Deserialize<GridAction>(json.ToString(), options);
         }
 
         public override void Write(Utf8JsonWriter writer, Action value, JsonSerializerOptions options)
@@ -148,7 +148,7 @@ namespace Celin.AIS
             var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
             return json.TryGetProperty("gridRowInsertEvents", out JsonElement _)
                 ? JsonSerializer.Deserialize<GridInsert>(json.ToString(), options)
-                : (Grid)JsonSerializer.Deserialize<GridUpdate>(json.ToString(), options);
+                : JsonSerializer.Deserialize<GridUpdate>(json.ToString(), options);
         }
 
         public override void Write(Utf8JsonWriter writer, Grid value, JsonSerializerOptions options)
