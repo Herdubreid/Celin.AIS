@@ -136,6 +136,7 @@ namespace Celin.AIS
         public IEnumerable<Action> formActions { get; set; }
         public string formOID { get; set; }
         public string stopOnWarning { get; set; }
+        public string maxPageSize { get; set; }
         public string returnControlIDs { get; set; }
     }
     public abstract class Service
