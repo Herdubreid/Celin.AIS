@@ -30,23 +30,21 @@ namespace Celin.AIS
             }
         }
     }
-    public class FormFieldJsonConverter : JsonConverter<Dictionary<int, FormField>>
+    public partial class FormFieldJsonConverter : JsonConverter<Dictionary<int, FormField>>
     {
-        static readonly Regex FIELD = new Regex("z_(\\w+)_(\\d+)");
+        [GeneratedRegex("z_(\\w+)_(\\d+)")]
+        private static partial Regex FIELD();
         public override Dictionary<int, FormField> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
 
-            var els = json.EnumerateObject()
-                .Select(e => FIELD.Match(e.Name));
-
             var res = json.EnumerateObject()
                 .Select(e =>
                 {
-                    var m = FIELD.Match(e.Name);
+                    var m = FIELD().Match(e.Name);
                     if (m.Success)
                     {
-                        var f = JsonSerializer.Deserialize<JsonHelpers.JsonField>(e.Value);
+                        var f = e.Value.Deserialize<JsonHelpers.JsonField>();
                         return new Tuple<int, FormField>(Convert.ToInt32(m.Groups[2].Value),
                             new FormField(m.Groups[1].Value, f.title, JsonHelpers.PropertyValue(f.value)));
                     }
@@ -57,9 +55,35 @@ namespace Celin.AIS
         }
 
         public override void Write(Utf8JsonWriter writer, Dictionary<int, FormField> value, JsonSerializerOptions options)
+            => throw new NotImplementedException();
+    }
+    public class ControlFieldJsonConverter : JsonConverter<Dictionary<int, ControlField>>
+    {
+        record type(string id, string title);
+        public override Dictionary<int, ControlField> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            var json = JsonSerializer.Deserialize<JsonElement> (ref reader, options);
+
+            var ctrls = json.EnumerateObject()
+                .Select(e =>
+                {
+                    ControlType t = e.Name.Substring(0, 3) switch
+                    {
+                        "mnu" => ControlType.Menu,
+                        "row" => ControlType.Row,
+                        "frm" => ControlType.Form,
+                        _ => ControlType.Other
+                    };
+                    var c = JsonSerializer.Deserialize<type>(e.Value);
+
+                    return new { t, c };
+                });
+            var res = ctrls.Where(e => e.t != ControlType.Other);
+            return res.ToDictionary(e => int.Parse(e.c.id), e => new ControlField(e.t, e.c.title));
         }
+
+        public override void Write(Utf8JsonWriter writer, Dictionary<int, ControlField> value, JsonSerializerOptions options)
+            => throw new NotImplementedException();
     }
     public class GridRowJsonConverter : JsonConverter<object[]>
     {
@@ -71,9 +95,7 @@ namespace Celin.AIS
         }
 
         public override void Write(Utf8JsonWriter writer, object[] value, JsonSerializerOptions options)
-        {
-            throw new NotImplementedException();
-        }
+            => throw new NotImplementedException();
     }
     public class UTimeJsonConverter : JsonConverter<DateTimeOffset>
     {
