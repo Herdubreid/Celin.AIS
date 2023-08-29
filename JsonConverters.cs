@@ -78,7 +78,7 @@ namespace Celin.AIS
 
                     return new { t, c };
                 });
-            var res = ctrls.Where(e => e.t != ControlType.Other);
+            var res = ctrls.Where(e => e.t != ControlType.Other && int.TryParse(e.c.id, out _));
             return res.ToDictionary(e => int.Parse(e.c.id), e => new ControlField(e.t, e.c.title));
         }
 
