@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <PackageId>Celin.AIS</PackageId>
-    <PackageVersion>6.0.1</PackageVersion>
     <Authors>Finnur Bragason</Authors>
     <Owners>Finnur Bragason</Owners>
     <Summary>Oracle E1/JDE AIS Library</Summary>
@@ -13,14 +12,14 @@
     <Description>Oracle E1/JDE AIS Library</Description>
     <PackageIconUrl>https://www.gravatar.com/avatar/82cf5b024555fa259f9dd9e448afe2ee</PackageIconUrl>
     <Company>Bragason and Associates Pty Ltd</Company>
-    <Version>6.0.1</Version>
+    <Version>8.0.0</Version>
     <RepositoryUrl>https://github.com/Herdubreid/Celin.AIS</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Bragson and Associates Pty Ltd 2019</Copyright>
     <PackageLicenseFile></PackageLicenseFile>
-    <AssemblyVersion>6.0.1.0</AssemblyVersion>
-    <FileVersion>6.0.1.0</FileVersion>
+    <AssemblyVersion></AssemblyVersion>
+    <FileVersion></FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -28,7 +27,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
   </ItemGroup>
 
 </Project>
