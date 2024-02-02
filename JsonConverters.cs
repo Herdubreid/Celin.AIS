@@ -7,9 +7,15 @@ using System.Text.RegularExpressions;
 
 namespace Celin.AIS
 {
-    static public class JsonHelpers
+    public static partial class JsonHelpers
     {
-        static readonly Regex DATE = new("^((?:19|20)[0-9][0-9])((?:0[1-9]|1[0-2]))((?:0[1-9]|[1-2][0-9]|3[0-1]))$");
+        [GeneratedRegex("^((?:19|20)[0-9][0-9])((?:0[1-9]|1[0-2]))((?:0[1-9]|[1-2][0-9]|3[0-1]))$")]
+        public static partial Regex DATE();
+        [GeneratedRegex(@"^(\d{4})(\d{2})(\d{2})$")]
+        public static partial Regex YMD(); 
+
+        [GeneratedRegex("z_(\\w+)_(\\d+)")]
+        public static partial Regex FIELD();
         public record JsonField(string title, JsonElement value);
         public static object PropertyValue(JsonElement json)
         {
@@ -19,7 +25,7 @@ namespace Celin.AIS
                     if (json.TryGetInt32(out var i)) return i;
                     else return json.GetDecimal();
                 case JsonValueKind.String:
-                    var m = DATE.Match(json.GetString() ?? string.Empty);
+                    var m = DATE().Match(json.GetString() ?? string.Empty);
                     if (m.Success)
                     {
                         return DateTime.Parse($"{m.Groups[1].Value}-{m.Groups[2].Value}-{m.Groups[3].Value}").Date;
@@ -30,10 +36,8 @@ namespace Celin.AIS
             }
         }
     }
-    public partial class FormFieldJsonConverter : JsonConverter<Dictionary<int, FormField>>
+    public class FormFieldJsonConverter : JsonConverter<Dictionary<int, FormField>>
     {
-        [GeneratedRegex("z_(\\w+)_(\\d+)")]
-        private static partial Regex FIELD();
         public override Dictionary<int, FormField> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
@@ -41,7 +45,7 @@ namespace Celin.AIS
             var res = json.EnumerateObject()
                 .Select(e =>
                 {
-                    var m = FIELD().Match(e.Name);
+                    var m = JsonHelpers.FIELD().Match(e.Name);
                     if (m.Success)
                     {
                         var f = e.Value.Deserialize<JsonHelpers.JsonField>();
@@ -117,13 +121,12 @@ namespace Celin.AIS
     }
     public class DateJsonConverter : JsonConverter<DateTime>
     {
-        static readonly Regex PAT = new Regex(@"^(\d{4})(\d{2})(\d{2})$");
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var json = JsonSerializer.Deserialize<string>(ref reader, options);
             if (!string.IsNullOrEmpty(json))
             {
-                var m = PAT.Match(json);
+                var m = JsonHelpers.YMD().Match(json);
                 if (m.Success)
                 {
                     try
