@@ -63,7 +63,7 @@ namespace Celin.AIS
     }
     public class ControlFieldJsonConverter : JsonConverter<Dictionary<int, ControlField>>
     {
-        record type(string id, string title);
+        record TypeRecord(string id, string title);
         public override Dictionary<int, ControlField> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var json = JsonSerializer.Deserialize<JsonElement> (ref reader, options);
@@ -78,7 +78,7 @@ namespace Celin.AIS
                         "frm" => ControlType.Form,
                         _ => ControlType.Other
                     };
-                    var c = JsonSerializer.Deserialize<type>(e.Value);
+                    var c = JsonSerializer.Deserialize<TypeRecord>(e.Value);
 
                     return new { t, c };
                 });
@@ -89,16 +89,16 @@ namespace Celin.AIS
         public override void Write(Utf8JsonWriter writer, Dictionary<int, ControlField> value, JsonSerializerOptions options)
             => throw new NotImplementedException();
     }
-    public class GridRowJsonConverter : JsonConverter<object[]>
+    public class GridRowJsonConverter : JsonConverter<IEnumerable<object>>
     {
-        public override object[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override IEnumerable<object> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
 
             return json.EnumerateObject().Select(c => JsonHelpers.PropertyValue(c.Value)).ToArray();
         }
 
-        public override void Write(Utf8JsonWriter writer, object[] value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, IEnumerable<object> value, JsonSerializerOptions options)
             => throw new NotImplementedException();
     }
     public class UTimeJsonConverter : JsonConverter<DateTimeOffset>
