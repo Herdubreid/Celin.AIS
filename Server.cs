@@ -73,11 +73,11 @@ namespace Celin.AIS
             Logger?.LogDebug("{0}\n{1}", defaultConfig.SERVICE, responseMessage.ReasonPhrase);
             if (responseMessage.IsSuccessStatusCode)
             {
-                return JsonSerializer.Deserialize<JsonElement>(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                return JsonSerializer.Deserialize<JsonElement>(await responseMessage.Content.ReadAsStringAsync(cancel).ConfigureAwait(false));
             }
             else
             {
-                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync(cancel).ConfigureAwait(false));
                 Logger?.LogError(responseMessage.ReasonPhrase);
                 throw new Exception(responseMessage.ReasonPhrase);
             }
@@ -106,8 +106,8 @@ namespace Celin.AIS
             Logger?.LogDebug(responseMessage.ReasonPhrase);
             if (responseMessage.IsSuccessStatusCode)
             {
-                AuthResponse = JsonSerializer.Deserialize<AuthResponse>(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
-                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                AuthResponse = JsonSerializer.Deserialize<AuthResponse>(await responseMessage.Content.ReadAsStringAsync(cancel).ConfigureAwait(false));
+                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync(cancel).ConfigureAwait(false));
             }
             else
             {
@@ -143,8 +143,8 @@ namespace Celin.AIS
             Logger?.LogDebug(responseMessage.ReasonPhrase);
             if (responseMessage.IsSuccessStatusCode)
             {
-                AuthResponse = JsonSerializer.Deserialize<AuthResponse>(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
-                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                AuthResponse = JsonSerializer.Deserialize<AuthResponse>(await responseMessage.Content.ReadAsStringAsync(cancel).ConfigureAwait(false));
+                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync(cancel).ConfigureAwait(false));
             }
             else
             {
@@ -170,16 +170,16 @@ namespace Celin.AIS
                 throw;
             }
             Logger?.LogDebug("{0}\n{1}", content.ToString(), responseMessage.ReasonPhrase);
-            Logger?.LogTrace(await content.ReadAsStringAsync().ConfigureAwait(false));
+            Logger?.LogTrace(await content.ReadAsStringAsync(cancel).ConfigureAwait(false));
             if (responseMessage.IsSuccessStatusCode)
             {
-                AuthResponse = JsonSerializer.Deserialize<AuthResponse>(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
-                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                AuthResponse = JsonSerializer.Deserialize<AuthResponse>(await responseMessage.Content.ReadAsStringAsync(cancel).ConfigureAwait(false));
+                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync(cancel).ConfigureAwait(false));
                 return;
             }
             else
             {
-                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false));
+                Logger?.LogTrace(await responseMessage.Content.ReadAsStringAsync(cancel).ConfigureAwait(false));
                 throw new AisException(responseMessage);
             }
         }
@@ -225,7 +225,7 @@ namespace Celin.AIS
                 touch = touch
             };
             var content = new StringContent(JsonSerializer.Serialize(request, jsonInputOptions), Encoding.UTF8, mediaType);
-            Logger?.LogTrace(await content.ReadAsStringAsync().ConfigureAwait(false));
+            Logger?.LogTrace(await content.ReadAsStringAsync(cancel).ConfigureAwait(false));
             try
             {
                 responseMessage = await Client.PostAsync(BaseUrl + request.SERVICE, content, cancel).ConfigureAwait(false);
@@ -235,7 +235,7 @@ namespace Celin.AIS
                 Logger?.LogError(e, nameof(IsValidSessionAsync));
                 throw;
             }
-            var body = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var body = await responseMessage.Content.ReadAsStringAsync(cancel).ConfigureAwait(false);
             Logger?.LogDebug("{0}\n{1}", content.ToString(), responseMessage.ReasonPhrase);
             Logger?.LogTrace(body);
             if (responseMessage.IsSuccessStatusCode)
@@ -290,7 +290,7 @@ namespace Celin.AIS
                 throw;
             }
             Logger?.LogDebug("{0}\n{1}", request.ToString(), responseMessage.ReasonPhrase);
-            var body = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var body = await responseMessage.Content.ReadAsStringAsync(cancel).ConfigureAwait(false);
             if (responseMessage.IsSuccessStatusCode)
             {
                 Logger?.LogTrace(body);
@@ -345,13 +345,13 @@ namespace Celin.AIS
             }
             catch (Exception e)
             {
-                Logger?.LogError(await content.ReadAsStringAsync().ConfigureAwait(false));
+                Logger?.LogError(await content.ReadAsStringAsync(cancel).ConfigureAwait(false));
                 Logger?.LogError(e.Message);
                 throw;
             }
             Logger?.LogDebug("{0}\n{1}", request.ToString(), responseMessage.ReasonPhrase);
-            Logger?.LogTrace(await content.ReadAsStringAsync().ConfigureAwait(false));
-            var body = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+            Logger?.LogTrace(await content.ReadAsStringAsync(cancel).ConfigureAwait(false));
+            var body = await responseMessage.Content.ReadAsStringAsync(cancel).ConfigureAwait(false);
             if (responseMessage.IsSuccessStatusCode)
             {
                 Logger?.LogTrace(body);
@@ -397,7 +397,7 @@ namespace Celin.AIS
                 throw;
             }
             Logger?.LogDebug("{0}\n{1}", href, responseMessage.ReasonPhrase);
-            var body = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var body = await responseMessage.Content.ReadAsStringAsync(cancel).ConfigureAwait(false);
             if (responseMessage.IsSuccessStatusCode)
             {
                 Logger?.LogTrace(body);
@@ -460,13 +460,13 @@ namespace Celin.AIS
                 throw;
             }
             Logger?.LogDebug("{0}\n{1}", request.ToString(), responseMessage.ReasonPhrase);
-            Logger?.LogTrace(content.ReadAsStringAsync().Result);
+            Logger?.LogTrace(content.ReadAsStringAsync(cancel).Result);
             if (responseMessage.IsSuccessStatusCode)
             {
-                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync().Result);
+                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync(cancel).Result);
                 try
                 {
-                    var result = JsonSerializer.Deserialize<FileAttachmentResponse>(responseMessage.Content.ReadAsStringAsync().Result);
+                    var result = JsonSerializer.Deserialize<FileAttachmentResponse>(responseMessage.Content.ReadAsStringAsync(cancel).Result);
                     return result;
                 }
                 catch (Exception e)
@@ -477,7 +477,7 @@ namespace Celin.AIS
             }
             else
             {
-                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync().Result);
+                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync(cancel).Result);
                 throw new AisException(responseMessage);
             }
         }
@@ -514,15 +514,15 @@ namespace Celin.AIS
                 throw;
             }
             Logger?.LogDebug("{0}\n{1}", request.ToString(), responseMessage.ReasonPhrase);
-            Logger?.LogTrace(content.ReadAsStringAsync().Result);
+            Logger?.LogTrace(content.ReadAsStringAsync(cancel).Result);
             if (responseMessage.IsSuccessStatusCode)
             {
-                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync().Result);
+                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync(cancel).Result);
                 return responseMessage.Content.ReadAsStreamAsync().Result;
             }
             else
             {
-                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync().Result);
+                Logger?.LogTrace(responseMessage.Content.ReadAsStringAsync(cancel).Result);
                 throw new AisException(responseMessage);
             }
         }
