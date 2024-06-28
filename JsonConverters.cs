@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -12,7 +13,7 @@ namespace Celin.AIS
         [GeneratedRegex("^((?:19|20)[0-9][0-9])((?:0[1-9]|1[0-2]))((?:0[1-9]|[1-2][0-9]|3[0-1]))$")]
         public static partial Regex DATE();
         [GeneratedRegex(@"^(\d{4})(\d{2})(\d{2})$")]
-        public static partial Regex YMD(); 
+        public static partial Regex YMD();
 
         [GeneratedRegex("z_(\\w+)_(\\d+)")]
         public static partial Regex FIELD();
@@ -34,6 +35,45 @@ namespace Celin.AIS
                 default:
                     return null;
             }
+        }
+    }
+    // The DynamicJsonElement
+    public class DynamicJsonElement : DynamicObject
+    {
+        public JsonElement Element { get; }
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        {
+            try
+            {
+                result = Element.GetProperty(binder.Name.ToUpper());
+            }
+            catch
+            {
+                result = default;
+                return false;
+            }
+            return true;
+        }
+        public JsonElement.ObjectEnumerator GetEnumerator()
+        {
+            return Element.EnumerateObject();
+        }
+        public DynamicJsonElement(JsonElement element)
+        {
+            Element = element;
+        }
+    }
+    // JsonConverter for the DynamicJsonElement
+    public class DynamicJsonConverter : JsonConverter<DynamicJsonElement>
+    {
+        public override DynamicJsonElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new DynamicJsonElement(JsonSerializer.Deserialize<JsonElement>(ref reader, options));
+        }
+
+        public override void Write(Utf8JsonWriter writer, DynamicJsonElement value, JsonSerializerOptions options)
+        {
+            throw new NotImplementedException();
         }
     }
     public class FormFieldJsonConverter : JsonConverter<Dictionary<int, FormField>>
@@ -66,7 +106,7 @@ namespace Celin.AIS
         record TypeRecord(string id, string title);
         public override Dictionary<int, ControlField> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var json = JsonSerializer.Deserialize<JsonElement> (ref reader, options);
+            var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
 
             var ctrls = json.EnumerateObject()
                 .Select(e =>

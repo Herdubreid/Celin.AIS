@@ -24,7 +24,8 @@ namespace Celin.AIS
             Converters =
             {
                 new DateJsonConverter(),
-                new UTimeJsonConverter()
+                new UTimeJsonConverter(),
+                new DynamicJsonConverter(),
             }
         };
         protected ILogger Logger { get; }
