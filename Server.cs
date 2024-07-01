@@ -26,6 +26,7 @@ namespace Celin.AIS
                 new DateJsonConverter(),
                 new UTimeJsonConverter(),
                 new DynamicJsonConverter(),
+                new GridRowJsonConverter(),
             }
         };
         protected ILogger Logger { get; }
