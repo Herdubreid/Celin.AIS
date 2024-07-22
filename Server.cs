@@ -27,7 +27,8 @@ namespace Celin.AIS
                 new UTimeJsonConverter(),
                 new DynamicJsonConverter(),
                 new GridRowJsonConverter(),
-            }
+            },
+            PropertyNameCaseInsensitive = true,
         };
         protected ILogger Logger { get; }
         readonly JsonSerializerOptions jsonInputOptions = new JsonSerializerOptions
