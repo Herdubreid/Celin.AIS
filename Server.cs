@@ -19,7 +19,7 @@ namespace Celin.AIS
     {
         public bool HasBasicAuthentication => Client.DefaultRequestHeaders.Authorization != null;
         public string BaseUrl { get; set; }
-        public JsonSerializerOptions JsonOutputOptions = new JsonSerializerOptions
+        public static readonly JsonSerializerOptions JsonOutputOptions = new JsonSerializerOptions
         {
             Converters =
             {

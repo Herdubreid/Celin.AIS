@@ -135,7 +135,7 @@ public class GridRowJsonConverter : JsonConverter<IEnumerable<object>>
     {
         var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
 
-        return json.EnumerateObject().Select(c => JsonHelpers.PropertyValue(c.Value)).ToArray();
+        return json.EnumerateObject().Select(c => JsonHelpers.PropertyValue(c.Value)).AsEnumerable();
     }
 
     public override void Write(Utf8JsonWriter writer, IEnumerable<object> value, JsonSerializerOptions options)
