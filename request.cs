@@ -117,6 +117,8 @@ namespace Celin.AIS
         public static readonly string MAX = "MAX";
         public static readonly string AVG = "AVG";
         public static readonly string COUNT = "COUNT";
+        public static readonly string ASC = "ASC";
+        public static readonly string DESC = "DESC";
         public string aggregation { get; set; }
         public string column { get; set; }
         public string direction { get; set; }
