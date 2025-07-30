@@ -238,7 +238,7 @@ public record Control(
     int idObject,
     string title,
     string memberName,
-    IEnumerable<DdInfo> ddInfo);
+    DdInfo ddInfo);
 public record TabPage(
     int type,
     int idControl,
