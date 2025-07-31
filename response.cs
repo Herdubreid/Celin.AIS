@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Celin.AIS;
 
@@ -239,6 +240,13 @@ public record Control(
     string title,
     string memberName,
     DdInfo ddInfo);
+public record RiItem(
+    int idItem,
+    string szDict,
+    string szDesc,
+    int length,
+    int dataType,
+    string szDataItem);
 public record TabPage(
     int type,
     int idControl,
@@ -256,6 +264,14 @@ public record DataSelectionColumn(
     string view,
     string dictItem,
     string table);
+public record ReportField(
+    [property: JsonPropertyName("@type")]
+    string stype,
+    int idEVDT,
+    string displayString,
+    int type,
+    int sectionID,
+    int variableID);
 public record ReportSecurity(
     bool canChangePO,
     bool canRunPO,
@@ -284,7 +300,9 @@ public record DiscoveryUBEResponse
     public IEnumerable<PoValue> poValues { get; init; }
     public PoPrompt poPrompt { get; init; }
     public IEnumerable<DataSelectionColumn> dataSelectionColumns { get; init; }
+    public IEnumerable<ReportField> dataSelectionReportFields { get; init; }
     public ReportSecurity reportSecurity { get; init; }
+    public IEnumerable<RiItem> reportInterconnects { get; init; }
     public PrintOptions printOptions { get; init; }
     string lastModifiedUser { get; init; }
 }
